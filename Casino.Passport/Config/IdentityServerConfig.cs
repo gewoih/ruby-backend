@@ -17,7 +17,7 @@ namespace Casino.Passport.Config
 		{
 			return new List<ApiScope>
 			{
-				new("all", "Casino API")
+				new("all", "Full Casino API")
 			};
 		}
 
@@ -25,7 +25,7 @@ namespace Casino.Passport.Config
 		{
 			return new List<ApiResource>
 			{
-				new("casino_api", "Casino API")
+				new("casino-api", "Casino API")
 				{
 					Scopes = { "all" }
 				}
