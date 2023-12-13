@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Security.Claims;
 using Casino.Passport.Config;
 using IdentityServer4.EntityFramework.DbContexts;
@@ -6,19 +7,22 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("PassportDb");
+var migrationsAssembly = typeof(Program).GetTypeInfo().Assembly.GetName().Name;
 var identityConfig = new IdentityServerConfig(builder.Configuration);
 
 builder.Services
-	.AddIdentityServer()
-	.AddInMemoryApiScopes(identityConfig.GetApiScopes())
-	.AddInMemoryApiResources(identityConfig.GetApiResources())
-	.AddInMemoryIdentityResources(identityConfig.GetIdentityResources())
-	.AddInMemoryClients(identityConfig.GetClients())
-	.AddOperationalStore(options =>
-	{
-		options.ConfigureDbContext = optionsBuilder => optionsBuilder.UseNpgsql(connectionString);
-		options.EnableTokenCleanup = true;
-	});
+    .AddIdentityServer()
+    .AddInMemoryApiScopes(identityConfig.GetApiScopes())
+    .AddInMemoryApiResources(identityConfig.GetApiResources())
+    .AddInMemoryIdentityResources(identityConfig.GetIdentityResources())
+    .AddInMemoryClients(identityConfig.GetClients())
+    .AddOperationalStore(options =>
+    {
+        options.ConfigureDbContext = optionsBuilder =>
+            optionsBuilder.UseNpgsql(connectionString, opt => opt.MigrationsAssembly(migrationsAssembly));
+        options.EnableTokenCleanup = true;
+    })
+    .AddDeveloperSigningCredential();;
 
 builder.Services.AddAuthentication(options =>
     {
@@ -27,15 +31,15 @@ builder.Services.AddAuthentication(options =>
     .AddCookie(options => { options.LoginPath = "/login"; })
     .AddSteam(options =>
     {
-	    options.Events.OnTicketReceived = context =>
-	    {
-		    var steamId = context.Principal.Claims.First().Value;
-		    var currentIdentity = (ClaimsIdentity)context.Principal.Identity;
-			currentIdentity.AddClaim(new Claim("sub", steamId));
+        options.Events.OnTicketReceived = context =>
+        {
+            var steamId = context.Principal.Claims.First().Value;
+            var currentIdentity = (ClaimsIdentity)context.Principal.Identity;
+            currentIdentity.AddClaim(new Claim("sub", steamId));
 
-		    return Task.CompletedTask;
-	    };
-	});
+            return Task.CompletedTask;
+        };
+    });
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
