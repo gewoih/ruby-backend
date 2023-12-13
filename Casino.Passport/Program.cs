@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Security.Claims;
 using Casino.Passport.Config;
+using IdentityServer4;
 using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +12,12 @@ var migrationsAssembly = typeof(Program).GetTypeInfo().Assembly.GetName().Name;
 var identityConfig = new IdentityServerConfig(builder.Configuration);
 
 builder.Services
-    .AddIdentityServer()
+    .AddIdentityServer(opt =>
+    {
+        opt.UserInteraction.ErrorUrl = "/error";
+        opt.UserInteraction.LoginUrl = "/login";
+        opt.UserInteraction.LogoutUrl = "/logout";
+    })
     .AddInMemoryApiScopes(identityConfig.GetApiScopes())
     .AddInMemoryApiResources(identityConfig.GetApiResources())
     .AddInMemoryIdentityResources(identityConfig.GetIdentityResources())
@@ -22,13 +28,13 @@ builder.Services
             optionsBuilder.UseNpgsql(connectionString, opt => opt.MigrationsAssembly(migrationsAssembly));
         options.EnableTokenCleanup = true;
     })
-    .AddDeveloperSigningCredential();;
+    .AddDeveloperSigningCredential();
 
 builder.Services.AddAuthentication(options =>
     {
-        options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        options.DefaultScheme = IdentityServerConstants.DefaultCookieAuthenticationScheme;
     })
-    .AddCookie(options => { options.LoginPath = "/login"; })
+    .AddCookie("Cookies")
     .AddSteam(options =>
     {
         options.Events.OnTicketReceived = context =>
