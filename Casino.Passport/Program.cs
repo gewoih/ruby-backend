@@ -1,14 +1,41 @@
 using System.Security.Claims;
+using Casino.Passport.Config;
+using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+var connectionString = builder.Configuration.GetConnectionString("PassportDb");
+var identityConfig = new IdentityServerConfig(builder.Configuration);
+
+builder.Services
+	.AddIdentityServer()
+	.AddInMemoryApiScopes(identityConfig.GetApiScopes())
+	.AddInMemoryApiResources(identityConfig.GetApiResources())
+	.AddInMemoryIdentityResources(identityConfig.GetIdentityResources())
+	.AddInMemoryClients(identityConfig.GetClients())
+	.AddOperationalStore(options =>
+	{
+		options.ConfigureDbContext = optionsBuilder => optionsBuilder.UseNpgsql(connectionString);
+		options.EnableTokenCleanup = true;
+	});
 
 builder.Services.AddAuthentication(options =>
     {
         options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     })
     .AddCookie(options => { options.LoginPath = "/login"; })
-    .AddSteam();
+    .AddSteam(options =>
+    {
+	    options.Events.OnTicketReceived = context =>
+	    {
+		    var steamId = context.Principal.Claims.First().Value;
+		    var currentIdentity = (ClaimsIdentity)context.Principal.Identity;
+			currentIdentity.AddClaim(new Claim("sub", steamId));
+
+		    return Task.CompletedTask;
+	    };
+	});
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -23,6 +50,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+using var serviceScope = app.Services.GetService<IServiceScopeFactory>()?.CreateScope();
+await serviceScope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.MigrateAsync();
+app.UseIdentityServer();
 
 app.UseAuthentication();
 app.UseAuthorization();

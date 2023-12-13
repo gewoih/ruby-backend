@@ -13,5 +13,11 @@ namespace Casino.Passport.Controllers
 
 			return result;
 		}
+
+		[HttpGet("callback")]
+		public IActionResult Callback(string code, string state)
+		{
+			return Ok();
+		}
 	}
 }
