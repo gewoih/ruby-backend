@@ -3,7 +3,6 @@ using System.Security.Claims;
 using Casino.Passport.Config;
 using IdentityServer4;
 using IdentityServer4.EntityFramework.DbContexts;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -69,8 +68,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-app.MapGet("/test", (ClaimsPrincipal user) => user.Claims.First().Value)
-    .RequireAuthorization();
 
 app.Run();
