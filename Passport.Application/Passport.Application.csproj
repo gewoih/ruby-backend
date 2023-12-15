@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Casino.Infrastructure\Passport.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>

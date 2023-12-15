@@ -2,7 +2,7 @@
 
 namespace Passport.Infrastructure.Models
 {
-	public sealed class User : IdentityUser
+	public sealed class InternalRole : IdentityRole<Guid>
 	{
 	}
 }

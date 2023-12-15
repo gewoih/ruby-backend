@@ -28,6 +28,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Casino.Infrastructure\Passport.Infrastructure.csproj" />
+    <ProjectReference Include="..\Passport.Application\Passport.Application.csproj" />
   </ItemGroup>
 
 </Project>

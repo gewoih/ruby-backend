@@ -1,11 +1,22 @@
-﻿using IdentityModel.Client;
+﻿using System.Security.Claims;
+using IdentityModel.Client;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
+using Passport.Application.Services.Users;
+using Passport.Domain.Enums;
 
 namespace Casino.Passport.Controllers
 {
     [Route("login")]
     public class AuthenticationController : Controller
     {
+	    private readonly IInternalUserService _userService;
+
+	    public AuthenticationController(IInternalUserService userService)
+	    {
+		    _userService = userService;
+	    }
+
 		[HttpGet]
         public IActionResult Login()
         {
@@ -13,7 +24,7 @@ namespace Casino.Passport.Controllers
 		}
 
         [HttpGet("callback")]
-        public async Task<IActionResult> Callback(string code)
+        public async Task<IActionResult> Callback(string code, string? status)
         {
 			var tokenResponse = await new HttpClient().RequestAuthorizationCodeTokenAsync(new AuthorizationCodeTokenRequest
 			{
@@ -28,7 +39,12 @@ namespace Casino.Passport.Controllers
 			if (tokenResponse.IsError)
 				return BadRequest(tokenResponse.Error);
 
-            return Ok(tokenResponse.AccessToken);
+			var steamId = HttpContext.User.Claims.First().Value;
+			var currentIdentity = (ClaimsIdentity)HttpContext.User.Identity;
+			currentIdentity.AddClaim(new Claim("sub", steamId));
+			var result = await _userService.RegisterAsync(ExternalAuthenticationMethod.Steam, steamId);
+
+			return Ok(tokenResponse.AccessToken);
 		}
 	}
 }

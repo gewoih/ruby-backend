@@ -2,21 +2,19 @@
 using IdentityServer4.EntityFramework.Options;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Passport.Infrastructure.Models;
 
 namespace Passport.Infrastructure.Database
 {
-	public sealed class PassportDbContext : IdentityDbContext
+	public sealed class PassportDbContext : IdentityDbContext<InternalUser, InternalRole, Guid>
 	{
-		private readonly ConfigurationStoreOptions _configurationStoreOptions;
 		private readonly OperationalStoreOptions _operationalStoreOptions;
 
 		public PassportDbContext(
-			DbContextOptions<PassportDbContext> options,
-			ConfigurationStoreOptions configurationStoreOptions, 
+			DbContextOptions<PassportDbContext> options, 
 			OperationalStoreOptions operationalStoreOptions) 
 			: base(options)
 		{
-			_configurationStoreOptions = configurationStoreOptions;
 			_operationalStoreOptions = operationalStoreOptions;
 		}
 
@@ -24,9 +22,6 @@ namespace Passport.Infrastructure.Database
 		{
 			base.OnModelCreating(builder);
 
-
-			builder.ConfigureClientContext(_configurationStoreOptions);
-			builder.ConfigureResourcesContext(_configurationStoreOptions);
 			builder.ConfigurePersistedGrantContext(_operationalStoreOptions);
 		}
 	}
