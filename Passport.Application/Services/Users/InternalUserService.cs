@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Passport.Domain.Enums;
 using Passport.Infrastructure.Database;
 using Passport.Infrastructure.Models;
@@ -21,12 +22,13 @@ namespace Passport.Application.Services.Users
 			InternalUser user;
 			try
 			{
-				user = await GetByExternalIdAsync(externalUserId);
+				user = await GetByExternalIdAsync(authenticationMethod, externalUserId);
 			}
 			catch (KeyNotFoundException)
 			{
 				user = new InternalUser
 				{
+					UserName = externalUserId,
 					ExternalId = externalUserId,
 					AuthenticationMethod = authenticationMethod
 				};
@@ -37,9 +39,16 @@ namespace Passport.Application.Services.Users
 			return user;
 		}
 
-		public Task<InternalUser> GetByExternalIdAsync(string externalUserId)
+		public async Task<InternalUser> GetByExternalIdAsync(ExternalAuthenticationMethod authenticationMethod, string externalUserId)
 		{
-			throw new NotImplementedException();
+			var foundUser = await _context.Users.FirstOrDefaultAsync(user =>
+				user.AuthenticationMethod == authenticationMethod && 
+				user.ExternalId == externalUserId);
+
+			if (foundUser is null)
+				throw new KeyNotFoundException($"Пользователь с ExternalID '{externalUserId}' во внешнем сервисе '{authenticationMethod}' не найден.");
+
+			return foundUser;
 		}
 
 		public async Task<InternalUser> GetByIdAsync(Guid id)

@@ -31,7 +31,7 @@ namespace Passport.Application.ProfileServices
 			var userId = context.Subject.GetSubjectId();
 			try
 			{
-				var user = await _userService.GetByExternalIdAsync(userId);
+				var user = await _userService.GetByExternalIdAsync(ExternalAuthenticationMethod.Steam, userId);
 				context.IsActive = true;
 			}
 			catch (KeyNotFoundException)
