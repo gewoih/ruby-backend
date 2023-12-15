@@ -1,11 +1,10 @@
 using System.Reflection;
-using System.Security.Claims;
 using Casino.Passport.Config;
 using IdentityServer4;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Passport.Application.ProfileServices;
 using Passport.Application.Services.Users;
-using Passport.Domain.Enums;
 using Passport.Infrastructure.Database;
 using Passport.Infrastructure.Models;
 
@@ -25,10 +24,9 @@ builder.Services.AddIdentity<InternalUser, InternalRole>()
 builder.Services
 	.AddIdentityServer(opt =>
 	{
-		opt.UserInteraction.ErrorUrl = "/error";
 		opt.UserInteraction.LoginUrl = "/login";
-		opt.UserInteraction.LogoutUrl = "/logout";
 	})
+	.AddProfileService<SteamProfileService>()
 	.AddDeveloperSigningCredential()
 	.AddAspNetIdentity<InternalUser>()
 	.AddInMemoryApiScopes(identityConfig.GetApiScopes())
@@ -49,15 +47,7 @@ builder.Services.AddAuthentication(options =>
     .AddCookie("Cookies")
     .AddSteam(options =>
     {
-	    options.CallbackPath = "/login/callback";
-        options.Events.OnTicketReceived = context =>
-        {
-			var steamId = context.Principal.Claims.First().Value;
-			var currentIdentity = (ClaimsIdentity)context.Principal.Identity;
-			currentIdentity.AddClaim(new Claim("sub", steamId));
-
-			return Task.CompletedTask;
-		};
+	    options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
     });
 
 builder.Services.AddControllers();
