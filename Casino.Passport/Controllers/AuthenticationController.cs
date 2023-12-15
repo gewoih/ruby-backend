@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Casino.Passport.Controllers
 {
     [Route("login")]
-    public class SteamAuthenticationController : Controller
+    public class AuthenticationController : Controller
     {
 		[HttpGet]
         public IActionResult Login()

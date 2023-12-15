@@ -2,32 +2,46 @@ using System.Reflection;
 using System.Security.Claims;
 using Casino.Passport.Config;
 using IdentityServer4;
-using IdentityServer4.EntityFramework.DbContexts;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Passport.Infrastructure.Database;
+using Passport.Infrastructure.Models;
 
 var builder = WebApplication.CreateBuilder(args);
-var connectionString = builder.Configuration.GetConnectionString("PassportDb");
+var connectionString = builder.Configuration.GetConnectionString("Default");
 var migrationsAssembly = typeof(Program).GetTypeInfo().Assembly.GetName().Name;
 var identityConfig = new IdentityServerConfig(builder.Configuration);
 
+builder.Services.AddDbContext<PassportDbContext>(options => options.UseNpgsql(connectionString));
+
+builder.Services.AddIdentity<User, IdentityRole>()
+	.AddEntityFrameworkStores<PassportDbContext>()
+	.AddDefaultTokenProviders();
+
 builder.Services
-    .AddIdentityServer(opt =>
-    {
-        opt.UserInteraction.ErrorUrl = "/error";
-        opt.UserInteraction.LoginUrl = "/login";
-        opt.UserInteraction.LogoutUrl = "/logout";
-    })
-    .AddInMemoryApiScopes(identityConfig.GetApiScopes())
-    .AddInMemoryApiResources(identityConfig.GetApiResources())
-    .AddInMemoryIdentityResources(identityConfig.GetIdentityResources())
-    .AddInMemoryClients(identityConfig.GetClients())
-    .AddOperationalStore(options =>
-    {
-        options.ConfigureDbContext = optionsBuilder =>
-            optionsBuilder.UseNpgsql(connectionString, opt => opt.MigrationsAssembly(migrationsAssembly));
-        options.EnableTokenCleanup = true;
-    })
-    .AddDeveloperSigningCredential();
+	.AddIdentityServer(opt =>
+	{
+		opt.UserInteraction.ErrorUrl = "/error";
+		opt.UserInteraction.LoginUrl = "/login";
+		opt.UserInteraction.LogoutUrl = "/logout";
+	})
+	.AddDeveloperSigningCredential()
+	.AddAspNetIdentity<User>()
+	.AddInMemoryApiScopes(identityConfig.GetApiScopes())
+	.AddInMemoryApiResources(identityConfig.GetApiResources())
+	.AddInMemoryIdentityResources(identityConfig.GetIdentityResources())
+	.AddInMemoryClients(identityConfig.GetClients())
+	.AddConfigurationStore(options =>
+	{
+		options.ConfigureDbContext = optionsBuilder =>
+			optionsBuilder.UseNpgsql(connectionString, opt => opt.MigrationsAssembly(migrationsAssembly));
+	})
+	.AddOperationalStore(options =>
+	{
+		options.ConfigureDbContext = optionsBuilder =>
+			optionsBuilder.UseNpgsql(connectionString, opt => opt.MigrationsAssembly(migrationsAssembly));
+		options.EnableTokenCleanup = true;
+	});
 
 builder.Services.AddAuthentication(options =>
     {
@@ -60,8 +74,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-using var serviceScope = app.Services.GetService<IServiceScopeFactory>()?.CreateScope();
-await serviceScope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.MigrateAsync();
+await using var scope = app.Services.CreateAsyncScope();
+var passportDbContext = scope.ServiceProvider.GetRequiredService<PassportDbContext>();
+passportDbContext.Database.Migrate();
+
 app.UseIdentityServer();
 
 app.UseAuthentication();
