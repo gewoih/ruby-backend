@@ -1,0 +1,35 @@
+﻿{
+  "Routes": [
+    {
+        "UpstreamPathTemplate": "/api/test",
+        "UpstreamHttpMethod": [ "Get" ],
+        "DownstreamPathTemplate": "/home/test",
+        "DownstreamScheme": "https",
+        "DownstreamHostAndPorts": [
+            {
+                "Host": "localhost",
+                "Port": 7008
+            }
+        ],
+        "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer",
+            "AllowedScopes": []
+        }
+    },
+    {
+        "UpstreamPathTemplate": "/api/login",
+        "UpstreamHttpMethod": [ "Get" ],
+        "DownstreamPathTemplate": "/connect/authorize",
+        "DownstreamScheme": "https",
+        "DownstreamHostAndPorts": [
+            {
+                "Host": "localhost",
+                "Port": 7220
+            }
+        ]
+    }
+  ],
+  "GlobalConfiguration": {
+    "BaseUrl": "https://localhost:7187"
+  }
+}

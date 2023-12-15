@@ -19,7 +19,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Apps", "Apps", "{BCA9366C-4
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Casino.Passport", "Casino.Passport\Casino.Passport.csproj", "{FD781B0D-F3E5-4D67-94E9-52A5F06CA82A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Casino.SignalR", "Casino.SignalR\Casino.SignalR.csproj", "{A36A58C6-CFB7-41EF-A51A-64314989B346}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Casino.SignalR", "Casino.SignalR\Casino.SignalR.csproj", "{A36A58C6-CFB7-41EF-A51A-64314989B346}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Casino.ApiGateway", "Casino.ApiGateway\Casino.ApiGateway.csproj", "{14BCAE1D-841A-4457-9C94-A90C0FA49F62}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +57,10 @@ Global
 		{A36A58C6-CFB7-41EF-A51A-64314989B346}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A36A58C6-CFB7-41EF-A51A-64314989B346}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A36A58C6-CFB7-41EF-A51A-64314989B346}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14BCAE1D-841A-4457-9C94-A90C0FA49F62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14BCAE1D-841A-4457-9C94-A90C0FA49F62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14BCAE1D-841A-4457-9C94-A90C0FA49F62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14BCAE1D-841A-4457-9C94-A90C0FA49F62}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -67,6 +73,7 @@ Global
 		{60E2C6E1-6DBF-4DBD-AFE0-B9ABDCB4E668} = {EC01BD36-503E-4055-A8BC-608097387088}
 		{FD781B0D-F3E5-4D67-94E9-52A5F06CA82A} = {BCA9366C-4900-4023-9851-E01FD8D2D04C}
 		{A36A58C6-CFB7-41EF-A51A-64314989B346} = {BCA9366C-4900-4023-9851-E01FD8D2D04C}
+		{14BCAE1D-841A-4457-9C94-A90C0FA49F62} = {BCA9366C-4900-4023-9851-E01FD8D2D04C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F1AC214C-52DD-47E3-A447-C93EA4C7A54F}

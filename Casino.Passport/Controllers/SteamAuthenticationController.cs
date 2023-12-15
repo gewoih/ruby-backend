@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using IdentityModel.Client;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Casino.Passport.Controllers
@@ -6,18 +6,29 @@ namespace Casino.Passport.Controllers
     [Route("login")]
     public class SteamAuthenticationController : Controller
     {
-        [HttpGet]
+		[HttpGet]
         public IActionResult Login()
         {
-            var result = Challenge(new AuthenticationProperties { RedirectUri = "/test" }, "Steam");
-
-            return result;
-        }
+			return Challenge("Steam");
+		}
 
         [HttpGet("callback")]
-        public IActionResult Callback(string code, string state)
+        public async Task<IActionResult> Callback(string code)
         {
-            return Ok();
-        }
-    }
+			var tokenResponse = await new HttpClient().RequestAuthorizationCodeTokenAsync(new AuthorizationCodeTokenRequest
+			{
+				Address = "https://localhost:7220/connect/token",
+				ClientId = "web_app",
+				Code = code,
+                CodeVerifier = "b9a8b29d9739e6ccfc6bcc41afa80d5b1376805afe66bb1f01a18946",
+				GrantType = "authorization_code",
+				RedirectUri = "https://localhost:7220/login/callback"
+			});
+
+			if (tokenResponse.IsError)
+				return BadRequest(tokenResponse.Error);
+
+            return Ok(tokenResponse.AccessToken);
+		}
+	}
 }

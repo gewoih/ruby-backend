@@ -45,6 +45,7 @@ namespace Casino.Passport.Config
 					ClientName = "Casino WebApp",
 					AllowedGrantTypes = GrantTypes.Code,
 					RequireClientSecret = false,
+					
 					AllowedScopes =
 					{
 						IdentityServerConstants.StandardScopes.OpenId, "all"
