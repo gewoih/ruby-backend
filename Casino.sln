@@ -3,25 +3,29 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34221.43
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Casino.WebApi", "Casino.WebApi\Casino.WebApi.csproj", "{95C1E4CC-2BCD-4044-ADEC-2BA0EC1B30D8}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Apps", "Apps", "{BCA9366C-4900-4023-9851-E01FD8D2D04C}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Microservices", "Microservices", "{BCA9366C-4900-4023-9851-E01FD8D2D04C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Casino.Passport", "Casino.Passport\Casino.Passport.csproj", "{FD781B0D-F3E5-4D67-94E9-52A5F06CA82A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Casino.SignalR", "Casino.SignalR\Casino.SignalR.csproj", "{A36A58C6-CFB7-41EF-A51A-64314989B346}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Casino.Hub", "Casino.SignalR\Casino.Hub.csproj", "{A36A58C6-CFB7-41EF-A51A-64314989B346}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Casino.ApiGateway", "Casino.ApiGateway\Casino.ApiGateway.csproj", "{14BCAE1D-841A-4457-9C94-A90C0FA49F62}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Casino.ApiGateway", "Casino.ApiGateway\Casino.ApiGateway.csproj", "{14BCAE1D-841A-4457-9C94-A90C0FA49F62}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Passport.Infrastructure", "Casino.Infrastructure\Passport.Infrastructure.csproj", "{B2590071-F248-4CA6-8AEA-29ACBF03B5BE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Passport.Infrastructure", "Casino.Infrastructure\Passport.Infrastructure.csproj", "{B2590071-F248-4CA6-8AEA-29ACBF03B5BE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "APIGateway", "APIGateway", "{9C96E98C-49E8-461E-AC9B-99E5CF5A74FF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Passport", "Passport", "{AD71C12D-CADA-421C-BCE4-5902BD91F309}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Passport.Domain", "Passport.Domain\Passport.Domain.csproj", "{D69BF063-C3F3-443D-92F4-317C3D3456C7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Passport.Domain", "Passport.Domain\Passport.Domain.csproj", "{D69BF063-C3F3-443D-92F4-317C3D3456C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Passport.Application", "Passport.Application\Passport.Application.csproj", "{1C28177A-5B62-468C-AA4E-C089528CC3E4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Passport.Application", "Passport.Application\Passport.Application.csproj", "{1C28177A-5B62-468C-AA4E-C089528CC3E4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SteamInventory", "SteamInventory", "{1161690D-1ECC-4C73-9022-8C7A59BB89E4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Hub", "Hub", "{7484E3AF-60AB-46BC-AFBB-D8E5722999C6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Casino.SteamInventory", "Casino.Steam\Casino.SteamInventory.csproj", "{8B7CE4CB-5AA1-4D7C-8ABD-0C419A2B7B0E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +33,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{95C1E4CC-2BCD-4044-ADEC-2BA0EC1B30D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{95C1E4CC-2BCD-4044-ADEC-2BA0EC1B30D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{95C1E4CC-2BCD-4044-ADEC-2BA0EC1B30D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{95C1E4CC-2BCD-4044-ADEC-2BA0EC1B30D8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FD781B0D-F3E5-4D67-94E9-52A5F06CA82A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FD781B0D-F3E5-4D67-94E9-52A5F06CA82A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FD781B0D-F3E5-4D67-94E9-52A5F06CA82A}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -57,18 +57,25 @@ Global
 		{1C28177A-5B62-468C-AA4E-C089528CC3E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1C28177A-5B62-468C-AA4E-C089528CC3E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1C28177A-5B62-468C-AA4E-C089528CC3E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B7CE4CB-5AA1-4D7C-8ABD-0C419A2B7B0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B7CE4CB-5AA1-4D7C-8ABD-0C419A2B7B0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B7CE4CB-5AA1-4D7C-8ABD-0C419A2B7B0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B7CE4CB-5AA1-4D7C-8ABD-0C419A2B7B0E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{95C1E4CC-2BCD-4044-ADEC-2BA0EC1B30D8} = {BCA9366C-4900-4023-9851-E01FD8D2D04C}
 		{FD781B0D-F3E5-4D67-94E9-52A5F06CA82A} = {AD71C12D-CADA-421C-BCE4-5902BD91F309}
-		{A36A58C6-CFB7-41EF-A51A-64314989B346} = {BCA9366C-4900-4023-9851-E01FD8D2D04C}
+		{A36A58C6-CFB7-41EF-A51A-64314989B346} = {7484E3AF-60AB-46BC-AFBB-D8E5722999C6}
 		{14BCAE1D-841A-4457-9C94-A90C0FA49F62} = {9C96E98C-49E8-461E-AC9B-99E5CF5A74FF}
 		{B2590071-F248-4CA6-8AEA-29ACBF03B5BE} = {AD71C12D-CADA-421C-BCE4-5902BD91F309}
+		{AD71C12D-CADA-421C-BCE4-5902BD91F309} = {BCA9366C-4900-4023-9851-E01FD8D2D04C}
 		{D69BF063-C3F3-443D-92F4-317C3D3456C7} = {AD71C12D-CADA-421C-BCE4-5902BD91F309}
 		{1C28177A-5B62-468C-AA4E-C089528CC3E4} = {AD71C12D-CADA-421C-BCE4-5902BD91F309}
+		{1161690D-1ECC-4C73-9022-8C7A59BB89E4} = {BCA9366C-4900-4023-9851-E01FD8D2D04C}
+		{7484E3AF-60AB-46BC-AFBB-D8E5722999C6} = {BCA9366C-4900-4023-9851-E01FD8D2D04C}
+		{8B7CE4CB-5AA1-4D7C-8ABD-0C419A2B7B0E} = {1161690D-1ECC-4C73-9022-8C7A59BB89E4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F1AC214C-52DD-47E3-A447-C93EA4C7A54F}
