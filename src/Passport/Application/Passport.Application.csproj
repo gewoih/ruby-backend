@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Casino.Infrastructure\Passport.Infrastructure.csproj" />
+    <ProjectReference Include="..\Infrastructure\Passport.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
