@@ -47,10 +47,11 @@ namespace Casino.Passport.Config
                         IdentityServerConstants.StandardScopes.OpenId, "all"
                     },
                     RequirePkce = true,
-                    RedirectUris = { "https://localhost:7220/login/callback", "http://localhost:4200" },
+                    RedirectUris = { "https://localhost:7220/callback", "http://localhost:4200" },
                     AllowedCorsOrigins = { "http://localhost:4200" },
                     PostLogoutRedirectUris = { "http://localhost:4200" },
                     AllowOfflineAccess = true,
+                    AllowAccessTokensViaBrowser = true
                 }
             };
         }

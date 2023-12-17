@@ -1,68 +1,75 @@
 using System.Reflection;
 using System.Security.Claims;
+using AspNet.Security.OpenId.Steam;
 using Casino.Passport.Config;
 using IdentityServer4.EntityFramework.DbContexts;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+using Passport.Application.ProfileServices;
 using Passport.Application.Services.Users;
 using Passport.Infrastructure.Database;
 using Passport.Infrastructure.Models;
-using Passport.WebApi;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("Default");
 var migrationsAssembly = typeof(Program).GetTypeInfo().Assembly.FullName;
 
-//builder.Services.AddScoped<IInternalUserService, InternalUserService>();
+builder.Services.AddScoped<IInternalUserService, InternalUserService>();
 
-//builder.Services.AddIdentity<InternalUser, InternalRole>()
-//	.AddEntityFrameworkStores<PassportDbContext>()
-//	.AddDefaultTokenProviders();
+builder.Services.AddIdentity<InternalUser, InternalRole>()
+	.AddEntityFrameworkStores<PassportDbContext>()
+	.AddDefaultTokenProviders();
 
-//builder.Services.AddDbContext<PassportDbContext>(options => 
-//	options.UseNpgsql(connectionString, 
-//		sql => sql.MigrationsAssembly(migrationsAssembly)));
-
-//SeedData.EnsureSeedData(connectionString);
+builder.Services.AddDbContext<PassportDbContext>(options =>
+	options.UseNpgsql(connectionString,
+		sql => sql.MigrationsAssembly(migrationsAssembly)));
 
 builder.Services
 	.AddIdentityServer(options =>
 	{
+		options.Events.RaiseErrorEvents = true;
+		options.Events.RaiseInformationEvents = true;
+		options.Events.RaiseFailureEvents = true;
+		options.Events.RaiseSuccessEvents = true;
+
+		options.EmitStaticAudienceClaim = true;
+
 		options.UserInteraction.ErrorUrl = "/error";
 		options.UserInteraction.LoginUrl = "/login";
 		options.UserInteraction.LogoutUrl = "/logout";
 	})
-	//.AddAspNetIdentity<InternalUser>()
-	//.AddConfigurationStore(options =>
-	//{
-	//	options.ConfigureDbContext = b =>
-	//		b.UseNpgsql(connectionString, opt => opt.MigrationsAssembly(migrationsAssembly));
-	//})
 	.AddInMemoryApiScopes(IdentityServerConfig.GetApiScopes())
 	.AddInMemoryApiResources(IdentityServerConfig.GetApiResources())
 	.AddInMemoryIdentityResources(IdentityServerConfig.GetIdentityResources())
 	.AddInMemoryClients(IdentityServerConfig.GetClients())
+	.AddAspNetIdentity<InternalUser>()
+	.AddProfileService<SteamProfileService>()
 	.AddOperationalStore(options =>
 	{
 		options.ConfigureDbContext = b =>
 			b.UseNpgsql(connectionString, opt => opt.MigrationsAssembly(migrationsAssembly));
 	})
-	//.AddProfileService<SteamProfileService>()
 	.AddDeveloperSigningCredential();
 
 builder.Services
-	.AddAuthentication()
+	.AddAuthentication(options =>
+	{
+		options.DefaultAuthenticateScheme = IdentityConstants.ExternalScheme;
+		options.DefaultChallengeScheme = SteamAuthenticationDefaults.AuthenticationScheme;
+	})
 	.AddCookie()
 	.AddSteam(options =>
 	{
-		options.Events.OnTicketReceived = context =>
+		options.Events.OnTicketReceived = async context =>
 		{
-			var steamId = context.Principal.Claims.First().Value;
+			var steamId = context.Principal.Claims.First().Value.Split("/").Last();
 			var currentIdentity = (ClaimsIdentity)context.Principal.Identity;
 			currentIdentity.AddClaim(new Claim("sub", steamId));
+			currentIdentity.AddClaim(new Claim("steam_id", steamId));
+			currentIdentity.AddClaim(new Claim("idp", context.Scheme.Name));
 
-			return Task.CompletedTask;
+			await context.HttpContext.SignInAsync(IdentityConstants.ExternalScheme, context.Principal);
 		};
 	});
 
@@ -80,9 +87,9 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 await using var scope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateAsyncScope();
+await scope.ServiceProvider.GetService<PassportDbContext>().Database.MigrateAsync();
 await scope.ServiceProvider.GetService<PersistedGrantDbContext>().Database.MigrateAsync();
 
-app.UseAuthentication();
 app.UseIdentityServer();
 app.UseAuthorization();
 

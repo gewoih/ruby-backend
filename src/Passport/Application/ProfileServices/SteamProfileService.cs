@@ -21,23 +21,14 @@ namespace Passport.Application.ProfileServices
 			var steamId = context.Subject.GetSubjectId();
 			var user = await _userService.RegisterAsync(ExternalAuthenticationMethod.Steam, steamId);
 
-			var claim = new Claim("Id", user.Id.ToString());
+			var claim = new Claim("id", user.Id.ToString());
 
 			context.IssuedClaims.Add(claim);
 		}
 
 		public async Task IsActiveAsync(IsActiveContext context)
 		{
-			var userId = context.Subject.GetSubjectId();
-			try
-			{
-				var user = await _userService.GetByExternalIdAsync(ExternalAuthenticationMethod.Steam, userId);
-				context.IsActive = true;
-			}
-			catch (KeyNotFoundException)
-			{
-				context.IsActive = false;
-			}
+			context.IsActive = true;
 		}
 	}
 }

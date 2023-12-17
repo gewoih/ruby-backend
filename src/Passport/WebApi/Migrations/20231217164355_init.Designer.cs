@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Passport.WebApi.Migrations
 {
     [DbContext(typeof(PersistedGrantDbContext))]
-    [Migration("20231217130058_init")]
+    [Migration("20231217164355_init")]
     partial class init
     {
         /// <inheritdoc />
