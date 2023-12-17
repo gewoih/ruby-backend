@@ -1,43 +1,36 @@
 ﻿using System.Security.Claims;
-using IdentityServer4.Extensions;
-using IdentityServer4.Models;
-using IdentityServer4.Services;
+using Duende.IdentityServer.AspNetIdentity;
+using Duende.IdentityServer.Extensions;
+using Duende.IdentityServer.Models;
+using Microsoft.AspNetCore.Identity;
 using Passport.Application.Services.Users;
 using Passport.Domain.Enums;
+using Passport.Infrastructure.Models;
 
 namespace Passport.Application.ProfileServices
 {
-	public sealed class SteamProfileService : IProfileService
+	public sealed class SteamProfileService : ProfileService<InternalUser>
 	{
 		private readonly IInternalUserService _userService;
 
-		public SteamProfileService(IInternalUserService userService)
+		public SteamProfileService(IInternalUserService userService, 
+			UserManager<InternalUser> userManager, 
+			IUserClaimsPrincipalFactory<InternalUser> claimsFactory) : base(userManager, claimsFactory)
 		{
 			_userService = userService;
 		}
 
-		public async Task GetProfileDataAsync(ProfileDataRequestContext context)
+		public override async Task GetProfileDataAsync(ProfileDataRequestContext context)
 		{
 			var steamId = context.Subject.GetSubjectId();
 			var user = await _userService.RegisterAsync(ExternalAuthenticationMethod.Steam, steamId);
 
-			var claim = new Claim("Id", user.Id.ToString());
-
-			context.IssuedClaims.Add(claim);
-		}
-
-		public async Task IsActiveAsync(IsActiveContext context)
-		{
-			var userId = context.Subject.GetSubjectId();
-			try
+			var claims = new List<Claim>
 			{
-				var user = await _userService.GetByExternalIdAsync(ExternalAuthenticationMethod.Steam, userId);
-				context.IsActive = true;
-			}
-			catch (KeyNotFoundException)
-			{
-				context.IsActive = false;
-			}
+				new("Id", user.Id.ToString())
+			};
+
+			context.AddRequestedClaims(claims);
 		}
 	}
 }

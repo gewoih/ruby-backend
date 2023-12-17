@@ -4,10 +4,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Passport.Infrastructure.Migrations
+namespace Passport.WebApi2.Data.Migrations.IdentityServer.ConfigurationDb
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class InitialIdentityServerConfigurationDbMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -24,6 +24,7 @@ namespace Passport.Infrastructure.Migrations
                     Description = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
                     AllowedAccessTokenSigningAlgorithms = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     ShowInDiscoveryDocument = table.Column<bool>(type: "boolean", nullable: false),
+                    RequireResourceIndicator = table.Column<bool>(type: "boolean", nullable: false),
                     Created = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Updated = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     LastAccessed = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -46,52 +47,15 @@ namespace Passport.Infrastructure.Migrations
                     Description = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
                     Required = table.Column<bool>(type: "boolean", nullable: false),
                     Emphasize = table.Column<bool>(type: "boolean", nullable: false),
-                    ShowInDiscoveryDocument = table.Column<bool>(type: "boolean", nullable: false)
+                    ShowInDiscoveryDocument = table.Column<bool>(type: "boolean", nullable: false),
+                    Created = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Updated = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    LastAccessed = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    NonEditable = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ApiScopes", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AspNetRoles",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    NormalizedName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetRoles", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AspNetUsers",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    AuthenticationMethod = table.Column<int>(type: "integer", nullable: false),
-                    ExternalId = table.Column<string>(type: "text", nullable: false),
-                    UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    NormalizedEmail = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    EmailConfirmed = table.Column<bool>(type: "boolean", nullable: false),
-                    PasswordHash = table.Column<string>(type: "text", nullable: true),
-                    SecurityStamp = table.Column<string>(type: "text", nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "text", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "text", nullable: true),
-                    PhoneNumberConfirmed = table.Column<bool>(type: "boolean", nullable: false),
-                    TwoFactorEnabled = table.Column<bool>(type: "boolean", nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    LockoutEnabled = table.Column<bool>(type: "boolean", nullable: false),
-                    AccessFailedCount = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -115,6 +79,9 @@ namespace Passport.Infrastructure.Migrations
                     AllowPlainTextPkce = table.Column<bool>(type: "boolean", nullable: false),
                     RequireRequestObject = table.Column<bool>(type: "boolean", nullable: false),
                     AllowAccessTokensViaBrowser = table.Column<bool>(type: "boolean", nullable: false),
+                    RequireDPoP = table.Column<bool>(type: "boolean", nullable: false),
+                    DPoPValidationMode = table.Column<int>(type: "integer", nullable: false),
+                    DPoPClockSkew = table.Column<TimeSpan>(type: "interval", nullable: false),
                     FrontChannelLogoutUri = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
                     FrontChannelLogoutSessionRequired = table.Column<bool>(type: "boolean", nullable: false),
                     BackChannelLogoutUri = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
@@ -136,12 +103,16 @@ namespace Passport.Infrastructure.Migrations
                     AlwaysSendClientClaims = table.Column<bool>(type: "boolean", nullable: false),
                     ClientClaimsPrefix = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
                     PairWiseSubjectSalt = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
-                    Created = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Updated = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    LastAccessed = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    InitiateLoginUri = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
                     UserSsoLifetime = table.Column<int>(type: "integer", nullable: true),
                     UserCodeType = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     DeviceCodeLifetime = table.Column<int>(type: "integer", nullable: false),
+                    CibaLifetime = table.Column<int>(type: "integer", nullable: true),
+                    PollingInterval = table.Column<int>(type: "integer", nullable: true),
+                    CoordinateLifetimeWithUserSession = table.Column<bool>(type: "boolean", nullable: true),
+                    Created = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Updated = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    LastAccessed = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     NonEditable = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
@@ -150,22 +121,24 @@ namespace Passport.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "DeviceCodes",
+                name: "IdentityProviders",
                 columns: table => new
                 {
-                    UserCode = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    DeviceCode = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    SubjectId = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
-                    SessionId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    ClientId = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    Description = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
-                    CreationTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Expiration = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Data = table.Column<string>(type: "character varying(50000)", maxLength: 50000, nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Scheme = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    DisplayName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+                    Enabled = table.Column<bool>(type: "boolean", nullable: false),
+                    Type = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    Properties = table.Column<string>(type: "text", nullable: true),
+                    Created = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Updated = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    LastAccessed = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    NonEditable = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DeviceCodes", x => x.UserCode);
+                    table.PrimaryKey("PK_IdentityProviders", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -188,26 +161,6 @@ namespace Passport.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_IdentityResources", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "PersistedGrants",
-                columns: table => new
-                {
-                    Key = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    Type = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    SubjectId = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
-                    SessionId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    ClientId = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    Description = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
-                    CreationTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Expiration = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    ConsumedTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    Data = table.Column<string>(type: "character varying(50000)", maxLength: 50000, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PersistedGrants", x => x.Key);
                 });
 
             migrationBuilder.CreateTable(
@@ -337,112 +290,6 @@ namespace Passport.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AspNetRoleClaims",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    RoleId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ClaimType = table.Column<string>(type: "text", nullable: true),
-                    ClaimValue = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetRoleClaims", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
-                        column: x => x.RoleId,
-                        principalTable: "AspNetRoles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AspNetUserClaims",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ClaimType = table.Column<string>(type: "text", nullable: true),
-                    ClaimValue = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUserClaims", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AspNetUserClaims_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AspNetUserLogins",
-                columns: table => new
-                {
-                    LoginProvider = table.Column<string>(type: "text", nullable: false),
-                    ProviderKey = table.Column<string>(type: "text", nullable: false),
-                    ProviderDisplayName = table.Column<string>(type: "text", nullable: true),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUserLogins", x => new { x.LoginProvider, x.ProviderKey });
-                    table.ForeignKey(
-                        name: "FK_AspNetUserLogins_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AspNetUserRoles",
-                columns: table => new
-                {
-                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    RoleId = table.Column<Guid>(type: "uuid", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUserRoles", x => new { x.UserId, x.RoleId });
-                    table.ForeignKey(
-                        name: "FK_AspNetUserRoles_AspNetRoles_RoleId",
-                        column: x => x.RoleId,
-                        principalTable: "AspNetRoles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_AspNetUserRoles_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AspNetUserTokens",
-                columns: table => new
-                {
-                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    LoginProvider = table.Column<string>(type: "text", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Value = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
-                    table.ForeignKey(
-                        name: "FK_AspNetUserTokens_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ClientClaims",
                 columns: table => new
                 {
@@ -529,7 +376,7 @@ namespace Passport.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    PostLogoutRedirectUri = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: false),
+                    PostLogoutRedirectUri = table.Column<string>(type: "character varying(400)", maxLength: 400, nullable: false),
                     ClientId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -570,7 +417,7 @@ namespace Passport.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    RedirectUri = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: false),
+                    RedirectUri = table.Column<string>(type: "character varying(400)", maxLength: 400, nullable: false),
                     ClientId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -670,13 +517,26 @@ namespace Passport.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ApiResourceClaims_ApiResourceId",
+                name: "IX_ApiResourceClaims_ApiResourceId_Type",
                 table: "ApiResourceClaims",
-                column: "ApiResourceId");
+                columns: new[] { "ApiResourceId", "Type" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_ApiResourceProperties_ApiResourceId",
+                name: "IX_ApiResourceProperties_ApiResourceId_Key",
                 table: "ApiResourceProperties",
+                columns: new[] { "ApiResourceId", "Key" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ApiResourceScopes_ApiResourceId_Scope",
+                table: "ApiResourceScopes",
+                columns: new[] { "ApiResourceId", "Scope" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ApiResourceSecrets_ApiResourceId",
+                table: "ApiResourceSecrets",
                 column: "ApiResourceId");
 
             migrationBuilder.CreateIndex(
@@ -686,24 +546,16 @@ namespace Passport.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_ApiResourceScopes_ApiResourceId",
-                table: "ApiResourceScopes",
-                column: "ApiResourceId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ApiResourceSecrets_ApiResourceId",
-                table: "ApiResourceSecrets",
-                column: "ApiResourceId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ApiScopeClaims_ScopeId",
+                name: "IX_ApiScopeClaims_ScopeId_Type",
                 table: "ApiScopeClaims",
-                column: "ScopeId");
+                columns: new[] { "ScopeId", "Type" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_ApiScopeProperties_ScopeId",
+                name: "IX_ApiScopeProperties_ScopeId_Key",
                 table: "ApiScopeProperties",
-                column: "ScopeId");
+                columns: new[] { "ScopeId", "Key" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_ApiScopes_Name",
@@ -712,75 +564,56 @@ namespace Passport.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_AspNetRoleClaims_RoleId",
-                table: "AspNetRoleClaims",
-                column: "RoleId");
-
-            migrationBuilder.CreateIndex(
-                name: "RoleNameIndex",
-                table: "AspNetRoles",
-                column: "NormalizedName",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AspNetUserClaims_UserId",
-                table: "AspNetUserClaims",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AspNetUserLogins_UserId",
-                table: "AspNetUserLogins",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AspNetUserRoles_RoleId",
-                table: "AspNetUserRoles",
-                column: "RoleId");
-
-            migrationBuilder.CreateIndex(
-                name: "EmailIndex",
-                table: "AspNetUsers",
-                column: "NormalizedEmail");
-
-            migrationBuilder.CreateIndex(
-                name: "UserNameIndex",
-                table: "AspNetUsers",
-                column: "NormalizedUserName",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ClientClaims_ClientId",
+                name: "IX_ClientClaims_ClientId_Type_Value",
                 table: "ClientClaims",
-                column: "ClientId");
+                columns: new[] { "ClientId", "Type", "Value" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_ClientCorsOrigins_ClientId",
+                name: "IX_ClientCorsOrigins_ClientId_Origin",
                 table: "ClientCorsOrigins",
-                column: "ClientId");
+                columns: new[] { "ClientId", "Origin" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_ClientGrantTypes_ClientId",
+                name: "IX_ClientGrantTypes_ClientId_GrantType",
                 table: "ClientGrantTypes",
-                column: "ClientId");
+                columns: new[] { "ClientId", "GrantType" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_ClientIdPRestrictions_ClientId",
+                name: "IX_ClientIdPRestrictions_ClientId_Provider",
                 table: "ClientIdPRestrictions",
-                column: "ClientId");
+                columns: new[] { "ClientId", "Provider" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_ClientPostLogoutRedirectUris_ClientId",
+                name: "IX_ClientPostLogoutRedirectUris_ClientId_PostLogoutRedirectUri",
                 table: "ClientPostLogoutRedirectUris",
-                column: "ClientId");
+                columns: new[] { "ClientId", "PostLogoutRedirectUri" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_ClientProperties_ClientId",
+                name: "IX_ClientProperties_ClientId_Key",
                 table: "ClientProperties",
-                column: "ClientId");
+                columns: new[] { "ClientId", "Key" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_ClientRedirectUris_ClientId",
+                name: "IX_ClientRedirectUris_ClientId_RedirectUri",
                 table: "ClientRedirectUris",
+                columns: new[] { "ClientId", "RedirectUri" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ClientScopes_ClientId_Scope",
+                table: "ClientScopes",
+                columns: new[] { "ClientId", "Scope" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ClientSecrets_ClientId",
+                table: "ClientSecrets",
                 column: "ClientId");
 
             migrationBuilder.CreateIndex(
@@ -790,56 +623,28 @@ namespace Passport.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_ClientScopes_ClientId",
-                table: "ClientScopes",
-                column: "ClientId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ClientSecrets_ClientId",
-                table: "ClientSecrets",
-                column: "ClientId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DeviceCodes_DeviceCode",
-                table: "DeviceCodes",
-                column: "DeviceCode",
+                name: "IX_IdentityProviders_Scheme",
+                table: "IdentityProviders",
+                column: "Scheme",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_DeviceCodes_Expiration",
-                table: "DeviceCodes",
-                column: "Expiration");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_IdentityResourceClaims_IdentityResourceId",
+                name: "IX_IdentityResourceClaims_IdentityResourceId_Type",
                 table: "IdentityResourceClaims",
-                column: "IdentityResourceId");
+                columns: new[] { "IdentityResourceId", "Type" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_IdentityResourceProperties_IdentityResourceId",
+                name: "IX_IdentityResourceProperties_IdentityResourceId_Key",
                 table: "IdentityResourceProperties",
-                column: "IdentityResourceId");
+                columns: new[] { "IdentityResourceId", "Key" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_IdentityResources_Name",
                 table: "IdentityResources",
                 column: "Name",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PersistedGrants_Expiration",
-                table: "PersistedGrants",
-                column: "Expiration");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PersistedGrants_SubjectId_ClientId_Type",
-                table: "PersistedGrants",
-                columns: new[] { "SubjectId", "ClientId", "Type" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PersistedGrants_SubjectId_SessionId_Type",
-                table: "PersistedGrants",
-                columns: new[] { "SubjectId", "SessionId", "Type" });
         }
 
         /// <inheritdoc />
@@ -862,21 +667,6 @@ namespace Passport.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "ApiScopeProperties");
-
-            migrationBuilder.DropTable(
-                name: "AspNetRoleClaims");
-
-            migrationBuilder.DropTable(
-                name: "AspNetUserClaims");
-
-            migrationBuilder.DropTable(
-                name: "AspNetUserLogins");
-
-            migrationBuilder.DropTable(
-                name: "AspNetUserRoles");
-
-            migrationBuilder.DropTable(
-                name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
                 name: "ClientClaims");
@@ -906,7 +696,7 @@ namespace Passport.Infrastructure.Migrations
                 name: "ClientSecrets");
 
             migrationBuilder.DropTable(
-                name: "DeviceCodes");
+                name: "IdentityProviders");
 
             migrationBuilder.DropTable(
                 name: "IdentityResourceClaims");
@@ -915,19 +705,10 @@ namespace Passport.Infrastructure.Migrations
                 name: "IdentityResourceProperties");
 
             migrationBuilder.DropTable(
-                name: "PersistedGrants");
-
-            migrationBuilder.DropTable(
                 name: "ApiResources");
 
             migrationBuilder.DropTable(
                 name: "ApiScopes");
-
-            migrationBuilder.DropTable(
-                name: "AspNetRoles");
-
-            migrationBuilder.DropTable(
-                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "Clients");
