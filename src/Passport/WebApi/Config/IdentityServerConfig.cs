@@ -51,7 +51,8 @@ namespace Casino.Passport.Config
                     AllowedCorsOrigins = { "http://localhost:4200" },
                     PostLogoutRedirectUris = { "http://localhost:4200" },
                     AllowOfflineAccess = true,
-                    AllowAccessTokensViaBrowser = true
+                    AllowAccessTokensViaBrowser = true,
+                    AccessTokenLifetime = 60
                 }
             };
         }
