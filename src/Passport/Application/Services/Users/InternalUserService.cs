@@ -34,6 +34,8 @@ namespace Passport.Application.Services.Users
 				};
 
 				var identityResult = await _userManager.CreateAsync(user);
+				if (!identityResult.Succeeded)
+					throw new Exception(identityResult.ToString());
 			}
 
 			return user;

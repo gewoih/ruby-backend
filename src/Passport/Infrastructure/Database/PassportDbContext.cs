@@ -9,10 +9,5 @@ namespace Passport.Infrastructure.Database
 		public PassportDbContext(DbContextOptions<PassportDbContext> options) : base(options)
 		{
 		}
-
-		protected override void OnModelCreating(ModelBuilder builder)
-		{
-			base.OnModelCreating(builder);
-		}
 	}
 }
