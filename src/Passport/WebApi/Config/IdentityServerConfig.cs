@@ -3,9 +3,9 @@ using IdentityServer4.Models;
 
 namespace Casino.Passport.Config
 {
-	public class IdentityServerConfig(IConfiguration configuration)
+	public class IdentityServerConfig
 	{
-		public IEnumerable<IdentityResource> GetIdentityResources()
+		public static IEnumerable<IdentityResource> GetIdentityResources()
 		{
 			return new List<IdentityResource>
 			{
@@ -13,7 +13,7 @@ namespace Casino.Passport.Config
 			};
 		}
 
-		public IEnumerable<ApiScope> GetApiScopes()
+		public static IEnumerable<ApiScope> GetApiScopes()
 		{
 			return new List<ApiScope>
 			{
@@ -21,7 +21,7 @@ namespace Casino.Passport.Config
 			};
 		}
 
-		public IEnumerable<ApiResource> GetApiResources()
+		public static IEnumerable<ApiResource> GetApiResources()
 		{
 			return new List<ApiResource>
 			{
@@ -32,11 +32,8 @@ namespace Casino.Passport.Config
 			};
 		}
 
-		public IEnumerable<Client> GetClients()
-		{	
-			var redirectUris = configuration.GetValue<string>("RedirectUris")?.Split(";").ToList();
-			var allowedCors = configuration.GetValue<string>("AllowedCors")?.Split(";").ToList();
-
+		public static IEnumerable<Client> GetClients()
+		{
 			return new List<Client>
 			{
 				new()
@@ -44,16 +41,19 @@ namespace Casino.Passport.Config
 					ClientId = "web_app",
 					ClientName = "Casino WebApp",
 					AllowedGrantTypes = GrantTypes.Code,
-					RequireClientSecret = false,
-					
+
+					ClientSecrets =
+					{
+						new Secret("A43DCC44-AC8C-46EE-B312-ECA6F6CBFA52".Sha256())
+					},
+
 					AllowedScopes =
 					{
 						IdentityServerConstants.StandardScopes.OpenId, "all"
 					},
-					RedirectUris = redirectUris,
-					PostLogoutRedirectUris = redirectUris,
-					AllowedCorsOrigins = allowedCors,
-					AllowAccessTokensViaBrowser = true
+					RequirePkce = true,
+					RedirectUris = { "https://localhost:7220/login/callback" },
+					AllowOfflineAccess = true,
 				}
 			};
 		}
