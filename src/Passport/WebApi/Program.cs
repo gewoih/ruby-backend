@@ -1,7 +1,6 @@
 using System.Reflection;
 using System.Security.Claims;
 using AspNet.Security.OpenId.Steam;
-using Casino.Passport.Config;
 using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
@@ -10,6 +9,7 @@ using Passport.Application.ProfileServices;
 using Passport.Application.Services.Users;
 using Passport.Infrastructure.Database;
 using Passport.Infrastructure.Models;
+using Passport.WebApi.Config;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("Default");
