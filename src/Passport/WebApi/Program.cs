@@ -1,6 +1,9 @@
 using System.Reflection;
+using System.Security.Claims;
+using AspNet.Security.OpenId.Steam;
 using Casino.Passport.Config;
-using IdentityServer4;
+using IdentityServer4.EntityFramework.DbContexts;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Passport.Application.ProfileServices;
@@ -10,10 +13,7 @@ using Passport.Infrastructure.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("Default");
-var migrationsAssembly = typeof(Program).GetTypeInfo().Assembly.GetName().Name;
-var identityConfig = new IdentityServerConfig(builder.Configuration);
-
-builder.Services.AddDbContext<PassportDbContext>(options => options.UseNpgsql(connectionString));
+var migrationsAssembly = typeof(Program).GetTypeInfo().Assembly.FullName;
 
 builder.Services.AddScoped<IInternalUserService, InternalUserService>();
 
@@ -21,34 +21,57 @@ builder.Services.AddIdentity<InternalUser, InternalRole>()
 	.AddEntityFrameworkStores<PassportDbContext>()
 	.AddDefaultTokenProviders();
 
+builder.Services.AddDbContext<PassportDbContext>(options =>
+	options.UseNpgsql(connectionString,
+		sql => sql.MigrationsAssembly(migrationsAssembly)));
+
 builder.Services
-	.AddIdentityServer(opt =>
+	.AddIdentityServer(options =>
 	{
-		opt.UserInteraction.LoginUrl = "/login";
+		options.Events.RaiseErrorEvents = true;
+		options.Events.RaiseInformationEvents = true;
+		options.Events.RaiseFailureEvents = true;
+		options.Events.RaiseSuccessEvents = true;
+
+		options.EmitStaticAudienceClaim = true;
+
+		options.UserInteraction.ErrorUrl = "/error";
+		options.UserInteraction.LoginUrl = "/login";
+		options.UserInteraction.LogoutUrl = "/logout";
 	})
-	.AddProfileService<SteamProfileService>()
-	.AddDeveloperSigningCredential()
+	.AddInMemoryApiScopes(IdentityServerConfig.GetApiScopes())
+	.AddInMemoryApiResources(IdentityServerConfig.GetApiResources())
+	.AddInMemoryIdentityResources(IdentityServerConfig.GetIdentityResources())
+	.AddInMemoryClients(IdentityServerConfig.GetClients())
 	.AddAspNetIdentity<InternalUser>()
-	.AddInMemoryApiScopes(identityConfig.GetApiScopes())
-	.AddInMemoryApiResources(identityConfig.GetApiResources())
-	.AddInMemoryIdentityResources(identityConfig.GetIdentityResources())
-	.AddInMemoryClients(identityConfig.GetClients())
+	.AddProfileService<SteamProfileService>()
 	.AddOperationalStore(options =>
 	{
-		options.ConfigureDbContext = optionsBuilder =>
-			optionsBuilder.UseNpgsql(connectionString, opt => opt.MigrationsAssembly(migrationsAssembly));
-		options.EnableTokenCleanup = true;
-	});
+		options.ConfigureDbContext = b =>
+			b.UseNpgsql(connectionString, opt => opt.MigrationsAssembly(migrationsAssembly));
+	})
+	.AddDeveloperSigningCredential();
 
-builder.Services.AddAuthentication(options =>
-    {
-        options.DefaultScheme = IdentityServerConstants.DefaultCookieAuthenticationScheme;
-    })
-    .AddCookie("Cookies")
-    .AddSteam(options =>
-    {
-	    options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-    });
+builder.Services
+	.AddAuthentication(options =>
+	{
+		options.DefaultAuthenticateScheme = IdentityConstants.ExternalScheme;
+		options.DefaultChallengeScheme = SteamAuthenticationDefaults.AuthenticationScheme;
+	})
+	.AddCookie()
+	.AddSteam(options =>
+	{
+		options.Events.OnTicketReceived = async context =>
+		{
+			var steamId = context.Principal.Claims.First().Value.Split("/").Last();
+			var currentIdentity = (ClaimsIdentity)context.Principal.Identity;
+			currentIdentity.AddClaim(new Claim("sub", steamId));
+			currentIdentity.AddClaim(new Claim("steam_id", steamId));
+			currentIdentity.AddClaim(new Claim("idp", context.Scheme.Name));
+
+			await context.HttpContext.SignInAsync(IdentityConstants.ExternalScheme, context.Principal);
+		};
+	});
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -58,19 +81,16 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
+	app.UseSwagger();
     app.UseSwaggerUI();
 }
-
 app.UseHttpsRedirection();
 
-await using var scope = app.Services.CreateAsyncScope();
-var passportDbContext = scope.ServiceProvider.GetRequiredService<PassportDbContext>();
-passportDbContext.Database.Migrate();
+await using var scope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateAsyncScope();
+await scope.ServiceProvider.GetService<PassportDbContext>().Database.MigrateAsync();
+await scope.ServiceProvider.GetService<PersistedGrantDbContext>().Database.MigrateAsync();
 
 app.UseIdentityServer();
-
-app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
