@@ -3,7 +3,7 @@ using IdentityServer4.Models;
 
 namespace Passport.WebApi.Config
 {
-	public class IdentityServerConfig
+	public static class IdentityServerConfig
 	{
 		public static IEnumerable<IdentityResource> GetIdentityResources()
 		{
