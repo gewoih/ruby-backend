@@ -25,11 +25,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SteamInventory", "SteamInve
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamInventory.WebApi", "SteamInventory\WebApi\SteamInventory.WebApi.csproj", "{A0590AE0-A2F4-45F1-94B9-31C45311372E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamInventory.Application", "SteamInventory\Application\SteamInventory.Application.csproj", "{F29D8F40-528D-462E-A3FA-08491E721D04}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamInventory.Application", "SteamInventory\Application\SteamInventory.Application.csproj", "{F29D8F40-528D-462E-A3FA-08491E721D04}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamInventory.Infrastructure", "SteamInventory\Infrastructure\SteamInventory.Infrastructure\SteamInventory.Infrastructure.csproj", "{F681262F-5BF7-4089-BF8F-3BDA33CEFDCA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamInventory.Infrastructure", "SteamInventory\Infrastructure\SteamInventory.Infrastructure\SteamInventory.Infrastructure.csproj", "{F681262F-5BF7-4089-BF8F-3BDA33CEFDCA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamInventory.Domain", "SteamInventory\Domain\SteamInventory.Domain\SteamInventory.Domain.csproj", "{F8F0DF85-D92B-49CE-BA96-3BC0F742D849}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamInventory.Domain", "SteamInventory\Domain\SteamInventory.Domain\SteamInventory.Domain.csproj", "{F8F0DF85-D92B-49CE-BA96-3BC0F742D849}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Casino.SharedLibrary", "Casino.SharedLibrary\Casino.SharedLibrary.csproj", "{B33486D8-8FF5-421E-A350-3D7CB0E005EB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -77,6 +79,10 @@ Global
 		{F8F0DF85-D92B-49CE-BA96-3BC0F742D849}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F8F0DF85-D92B-49CE-BA96-3BC0F742D849}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F8F0DF85-D92B-49CE-BA96-3BC0F742D849}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B33486D8-8FF5-421E-A350-3D7CB0E005EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B33486D8-8FF5-421E-A350-3D7CB0E005EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B33486D8-8FF5-421E-A350-3D7CB0E005EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B33486D8-8FF5-421E-A350-3D7CB0E005EB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,6 +1,6 @@
 ﻿namespace SteamInventory.Application.Models.Inventory
 {
-    public sealed class CounterStrikeAsset
+    public sealed class WaxpeerAsset
     {
         /// <summary>
         /// ID пользователя Steam, который владеет предметом.

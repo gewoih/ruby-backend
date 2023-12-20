@@ -11,4 +11,9 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Casino.SharedLibrary\Casino.SharedLibrary.csproj" />
+    <ProjectReference Include="..\Domain\SteamInventory.Domain\SteamInventory.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
