@@ -6,20 +6,22 @@
 		public string Message { get; set; }
 		public T Data { get; set; }
 
-		public ApiResponse<T> Success(T data)
+		public static ApiResponse<T> Success(T data)
 		{
-			Succeeded = true;
-			Data = data;
-
-			return this;
+			return new ApiResponse<T>
+			{
+				Succeeded = true,
+				Data = data
+			};
 		}
 
-		public ApiResponse<T> Error(string message)
+		public static ApiResponse<T> Error(string message)
 		{
-			Succeeded = false;
-			Message = message;
-
-			return this;
+			return new ApiResponse<T>
+			{
+				Succeeded = false,
+				Message = message
+			};
 		}
 	}
 }
