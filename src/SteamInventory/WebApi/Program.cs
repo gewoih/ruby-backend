@@ -1,4 +1,5 @@
-using SteamInventory.Application.Services;
+using SteamInventory.Application.Services.Steam;
+using SteamInventory.Application.Services.Waxpeer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +10,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddHttpClient();
 
 builder.Services.AddScoped<ISteamService, SteamService>();
+builder.Services.AddScoped<IWaxpeerService, WaxpeerService>();
 
 var app = builder.Build();
 
