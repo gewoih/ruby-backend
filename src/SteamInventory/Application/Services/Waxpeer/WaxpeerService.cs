@@ -11,6 +11,7 @@ namespace SteamInventory.Application.Services.Waxpeer
 		private readonly IHttpClientFactory _httpClientFactory;
 		private readonly string _getUserInfoUrl;
 		private readonly string _getTradeLinkInfoUrl;
+		private readonly string _addUserUrl;
 
 		public WaxpeerService(IHttpClientFactory httpClientFactory, IConfiguration configuration)
 		{
@@ -18,8 +19,9 @@ namespace SteamInventory.Application.Services.Waxpeer
 			var apiKey = configuration["Waxpeer:ApiKey"];
 			var merchantName = configuration["Waxpeer:MerchantName"];
 
-			_getUserInfoUrl = string.Format(configuration["Waxpeer:Endpoints:GetUserInfo"], apiKey, merchantName);
+			_getUserInfoUrl = string.Format(configuration["Waxpeer:Endpoints:GetUserInfo"], apiKey, merchantName, "{0}");
 			_getTradeLinkInfoUrl = string.Format(configuration["Waxpeer:Endpoints:GetTradeLinkInfo"], apiKey);
+			_addUserUrl = string.Format(configuration["Waxpeer:Endpoints:AddUser"], apiKey, merchantName);
 		}
 
 		public async Task<UserInfo?> GetUserInfoAsync(long steamId)
@@ -33,8 +35,36 @@ namespace SteamInventory.Application.Services.Waxpeer
 
 			var usersInfo = new UserInfo
 			{
+				IsNewUser = false,
 				SteamId = steamId.ToString(),
 				TradeLink = jsonObject["user"].Value<string>("tradelink"),
+				CanSell = jsonObject["user"].Value<bool>("can_sell"),
+				CanP2P = jsonObject["user"].Value<bool>("can_p2p")
+			};
+
+			return usersInfo;
+		}
+
+		public async Task<UserInfo?> AddUserAsync(long steamId, string tradeLink)
+		{
+			var contentData = new
+			{
+				tradeLink,
+				steamId
+			};
+
+			var serializedData = JsonConvert.SerializeObject(contentData);
+			var requestContent = new StringContent(serializedData, Encoding.UTF8, HttpUtils.JsonMediaType);
+			var jsonObject = await HttpUtils.Post(_httpClientFactory, _addUserUrl, requestContent);
+			var isSucceeded = jsonObject.Value<bool>("success");
+			if (!isSucceeded)
+				return null;
+
+			var usersInfo = new UserInfo
+			{
+				IsNewUser = true,
+				SteamId = steamId.ToString(),
+				TradeLink = tradeLink,
 				CanSell = jsonObject["user"].Value<bool>("can_sell"),
 				CanP2P = jsonObject["user"].Value<bool>("can_p2p")
 			};
