@@ -2,6 +2,9 @@
 using Casino.SharedLibrary.Utils;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using SteamInventory.Application.Models;
+using SteamInventory.Application.Models.Inventory;
 using SteamInventory.Application.Services.Waxpeer.Models;
 
 namespace SteamInventory.Application.Services.Waxpeer
@@ -12,6 +15,8 @@ namespace SteamInventory.Application.Services.Waxpeer
 		private readonly string _getUserInfoUrl;
 		private readonly string _getTradeLinkInfoUrl;
 		private readonly string _addUserUrl;
+		private readonly string _getInventoryInfoUrl;
+		private readonly string _getInventoryAssetsUrl;
 
 		public WaxpeerService(IHttpClientFactory httpClientFactory, IConfiguration configuration)
 		{
@@ -22,27 +27,22 @@ namespace SteamInventory.Application.Services.Waxpeer
 			_getUserInfoUrl = string.Format(configuration["Waxpeer:Endpoints:GetUserInfo"], apiKey, merchantName, "{0}");
 			_getTradeLinkInfoUrl = string.Format(configuration["Waxpeer:Endpoints:GetTradeLinkInfo"], apiKey);
 			_addUserUrl = string.Format(configuration["Waxpeer:Endpoints:AddUser"], apiKey, merchantName);
+			_getInventoryInfoUrl = string.Format(configuration["Waxpeer:Endpoints:GetInventoryInfo"], apiKey, merchantName, "{0}");
+			_getInventoryAssetsUrl = string.Format(configuration["Waxpeer:Endpoints:GetInventoryAssets"], apiKey, merchantName, "{0}", "{1}");
 		}
 
 		public async Task<UserInfo?> GetUserInfoAsync(long steamId)
 		{
 			var requestUrl = string.Format(_getUserInfoUrl, steamId);
-			var jsonObject = await HttpUtils.Get(_httpClientFactory, requestUrl);
-
-			var isSucceeded = jsonObject.Value<bool>("success");
-			if (!isSucceeded)
+			var responseContent = await HttpUtils.GetAsync(_httpClientFactory, requestUrl);
+			var jsonObject = JObject.Parse(responseContent);
+			if (!jsonObject.Value<bool>("success"))
 				return null;
 
-			var usersInfo = new UserInfo
-			{
-				IsNewUser = false,
-				SteamId = steamId.ToString(),
-				TradeLink = jsonObject["user"].Value<string>("tradelink"),
-				CanSell = jsonObject["user"].Value<bool>("can_sell"),
-				CanP2P = jsonObject["user"].Value<bool>("can_p2p")
-			};
+			var userContent = jsonObject["user"].ToString();
+			var userInfo = JsonConvert.DeserializeObject<UserInfo>(userContent);
 
-			return usersInfo;
+			return userInfo;
 		}
 
 		public async Task<UserInfo?> AddUserAsync(long steamId, string tradeLink)
@@ -55,24 +55,54 @@ namespace SteamInventory.Application.Services.Waxpeer
 
 			var serializedData = JsonConvert.SerializeObject(contentData);
 			var requestContent = new StringContent(serializedData, Encoding.UTF8, HttpUtils.JsonMediaType);
-			var jsonObject = await HttpUtils.Post(_httpClientFactory, _addUserUrl, requestContent);
-			var isSucceeded = jsonObject.Value<bool>("success");
-			if (!isSucceeded)
+			var responseContent = await HttpUtils.PostAsync(_httpClientFactory, _addUserUrl, requestContent);
+			var jsonObject = JObject.Parse(responseContent);
+			if (!jsonObject.Value<bool>("success"))
 				return null;
 
-			var usersInfo = new UserInfo
-			{
-				IsNewUser = true,
-				SteamId = steamId.ToString(),
-				TradeLink = tradeLink,
-				CanSell = jsonObject["user"].Value<bool>("can_sell"),
-				CanP2P = jsonObject["user"].Value<bool>("can_p2p")
-			};
+			var userContent = jsonObject["user"].ToString();
+			var userInfo = JsonConvert.DeserializeObject<UserInfo>(userContent);
 
-			return usersInfo;
+			return userInfo;
 		}
 
-		public async Task<TradeLinkInfo> GetTradeLinkInfoAsync(string tradeLink)
+		public async Task<InventoryInfo?> GetInventoryInfoAsync(long steamId)
+		{
+			var requestUrl = string.Format(_getInventoryInfoUrl, steamId);
+			var responseContent = await HttpUtils.GetAsync(_httpClientFactory, requestUrl);
+
+			return JsonConvert.DeserializeObject<InventoryInfo>(responseContent);
+		}
+
+		public async Task<List<WaxpeerAsset>> GetSteamAssetsAsync(long steamId, SteamGame game)
+		{
+			var requestUrl = string.Format(_getInventoryAssetsUrl, steamId, (int)game);
+			var responseContent = await HttpUtils.GetAsync(_httpClientFactory, requestUrl);
+			var jsonObject = JObject.Parse(responseContent);
+
+			var assets = new List<WaxpeerAsset>();
+			if (!jsonObject.Value<bool>("success"))
+				return assets;
+
+			var items = jsonObject.Value<JArray>("items");
+			foreach (var item in items)
+			{
+				var asset = new WaxpeerAsset
+				{
+					AssetId = item.Value<long>("item_id"),
+					MarketName = item.Value<string>("name"),
+					Marketable = item.Value<bool>("limit") == false && item.Value<int>("instant_price") > 0,
+					MarketPrice = item.Value<int>("instant_price"),
+					ImageUrl = item.Value<JObject>("steam_price").Value<string>("img"),
+				};
+
+				assets.Add(asset);
+			}
+
+			return assets;
+		}
+
+		public async Task<TradeLinkInfo?> GetTradeLinkInfoAsync(string tradeLink)
 		{
 			var contentData = new
 			{
@@ -81,17 +111,9 @@ namespace SteamInventory.Application.Services.Waxpeer
 
 			var serializedData = JsonConvert.SerializeObject(contentData);
 			var requestContent = new StringContent(serializedData, Encoding.UTF8, HttpUtils.JsonMediaType);
-			var jsonObject = await HttpUtils.Post(_httpClientFactory, _getTradeLinkInfoUrl, requestContent);
+			var responseContent = await HttpUtils.PostAsync(_httpClientFactory, _getTradeLinkInfoUrl, requestContent);
 
-			var tradeLinkInfo = new TradeLinkInfo
-			{
-				Success = jsonObject.Value<bool>("success"),
-				Link = tradeLink,
-				Message = jsonObject.Value<string>("msg"),
-				SteamId = jsonObject.Value<string>("steamid64"),
-				Info = jsonObject.Value<string>("info"),
-				Token = jsonObject.Value<string>("token")
-			};
+			var tradeLinkInfo = JsonConvert.DeserializeObject<TradeLinkInfo>(responseContent);
 
 			return tradeLinkInfo;
 		}

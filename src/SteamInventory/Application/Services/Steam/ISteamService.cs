@@ -5,6 +5,6 @@ namespace SteamInventory.Application.Services.Steam
 {
     public interface ISteamService
     {
-        Task<List<CounterStrikeAsset>> GetInventoryAsync(long steamId, SteamGame game, CancellationToken cancellationToken = default);
+        Task<List<WaxpeerAsset>> GetInventoryAsync(long steamId, SteamGame game, CancellationToken cancellationToken = default);
     }
 }
