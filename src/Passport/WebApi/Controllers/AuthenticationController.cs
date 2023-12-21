@@ -1,12 +1,15 @@
 ﻿using IdentityModel.Client;
 using IdentityServer4.Extensions;
+using IdentityServer4.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Passport.WebApi.Controllers
 {
-	public class SteamAuthenticationController : Controller
+	public class SteamAuthenticationController(IIdentityServerInteractionService interaction) : Controller
 	{
+		private readonly IIdentityServerInteractionService _interaction = interaction;
+
 		[HttpGet("login")]
 		public IActionResult Login(string returnUrl)
 		{
@@ -18,10 +21,16 @@ namespace Passport.WebApi.Controllers
 
 		[HttpGet("logout")]
 		// [ValidateAntiForgeryToken]
-		public IActionResult Logout()
+		public async Task<IActionResult> Logout(string logoutId)
 		{
-			return SignOut(new AuthenticationProperties() { RedirectUri = "http://localhost:4200" }, "Cookies", "idsrv",
-				"idsrv.external");
+			var logout = await _interaction.GetLogoutContextAsync(logoutId);
+
+			if (User.Identity?.IsAuthenticated == true)
+			{
+				await HttpContext.SignOutAsync();
+			}
+
+			return Redirect(logout?.PostLogoutRedirectUri ?? "~/");
 		}
 
 		[HttpGet("callback")]
