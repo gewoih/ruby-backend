@@ -52,7 +52,7 @@ namespace Passport.WebApi.Config
 					PostLogoutRedirectUris = { "http://localhost:4200" },
 					AllowOfflineAccess = true,
 					AllowAccessTokensViaBrowser = true,
-					AccessTokenLifetime = 60
+					AccessTokenLifetime = 60 * 60 * 168
 				}
 			};
 		}

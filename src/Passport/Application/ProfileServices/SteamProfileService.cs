@@ -18,12 +18,13 @@ namespace Passport.Application.ProfileServices
 
 		public async Task GetProfileDataAsync(ProfileDataRequestContext context)
 		{
-			var steamId = context.Subject.GetSubjectId();
+			var steamId = context.Subject.GetSubjectId().Split("/").Last();
 			var user = await _userService.RegisterAsync(ExternalAuthenticationMethod.Steam, steamId);
 
-			var claim = new Claim("id", user.Id.ToString());
-
-			context.IssuedClaims.Add(claim);
+			var userIdClaim = new Claim("id", user.Id.ToString());
+			var steamIdClaim = new Claim("steam_id", steamId);
+			
+			context.IssuedClaims.AddRange([userIdClaim, steamIdClaim]);
 		}
 
 		public async Task IsActiveAsync(IsActiveContext context)

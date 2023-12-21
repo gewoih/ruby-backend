@@ -11,12 +11,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 	.AddJwtBearer(options =>
 	{
 		options.Authority = builder.Configuration.GetValue<string>("PassportUrl");
-		options.RequireHttpsMetadata =
-			options.Authority.StartsWith(Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase);
 		options.Audience = "casino-api";
+		options.RequireHttpsMetadata = true;
 		options.TokenValidationParameters = new TokenValidationParameters
 		{
-			ValidIssuers = builder.Configuration.GetSection("JwtIssuers").Get<IEnumerable<string>>()
+			ValidIssuer = builder.Configuration["PassportUrl"],
+			ValidateAudience = true,
+			ValidateLifetime = true,
+			ValidateIssuer = true,
 		};
 	});
 
