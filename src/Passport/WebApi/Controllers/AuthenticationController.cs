@@ -6,9 +6,14 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Passport.WebApi.Controllers
 {
-	public class SteamAuthenticationController(IIdentityServerInteractionService interaction) : Controller
+	public class SteamAuthenticationController : Controller
 	{
-		private readonly IIdentityServerInteractionService _interaction = interaction;
+		private readonly IIdentityServerInteractionService _interaction;
+
+		public SteamAuthenticationController(IIdentityServerInteractionService interaction)
+		{
+			_interaction = interaction;
+		}
 
 		[HttpGet("login")]
 		public IActionResult Login(string returnUrl)
@@ -20,21 +25,18 @@ namespace Passport.WebApi.Controllers
 		}
 
 		[HttpGet("logout")]
-		// [ValidateAntiForgeryToken]
 		public async Task<IActionResult> Logout(string logoutId)
 		{
 			var logout = await _interaction.GetLogoutContextAsync(logoutId);
 
 			if (User.Identity?.IsAuthenticated == true)
-			{
 				await HttpContext.SignOutAsync();
-			}
 
 			return Redirect(logout?.PostLogoutRedirectUri ?? "~/");
 		}
 
 		[HttpGet("callback")]
-		public async Task<IActionResult> Callback(string code, string scope, string session_state)
+		public async Task<IActionResult> Callback(string code, string scope)
 		{
 			var tokenResponse = await new HttpClient().RequestAuthorizationCodeTokenAsync(new AuthorizationCodeTokenRequest
 			{
