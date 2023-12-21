@@ -28,7 +28,7 @@ namespace SteamInventory.WebApi.Controllers
 			return Ok(response);
 		}
 
-		[HttpGet("inventory/v2/{steamId}/{steamGame}")]
+		[HttpGet("inventory/v2")]
 		public async Task<IActionResult> GetInventoryV2([Required] long steamId, [Required] string tradeLink, [Required] SteamGame steamGame, 
 			CancellationToken cancellationToken)
 		{

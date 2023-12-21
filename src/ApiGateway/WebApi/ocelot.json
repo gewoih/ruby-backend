@@ -27,6 +27,27 @@
                 "Port": 7220
             }
         ]
+    },
+
+    {
+        "UpstreamPathTemplate": "/api/inventory",
+        "UpstreamHttpMethod": [ "Get" ],
+        "DownstreamPathTemplate": "/api/inventory/v2",
+        "DownstreamScheme": "https",
+        "DownstreamHostAndPorts": [
+            {
+                "Host": "localhost",
+                "Port": 7100
+            }
+        ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "AddQueriesToRequest": {
+            "steamId": "Claims[steam_id] > value",
+            "tradeLink": "123"
+        }
     }
   ],
   "GlobalConfiguration": {

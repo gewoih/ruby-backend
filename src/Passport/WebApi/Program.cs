@@ -63,10 +63,9 @@ builder.Services
 	{
 		options.Events.OnTicketReceived = async context =>
 		{
-			var steamId = context.Principal.Claims.First().Value.Split("/").Last();
+			var steamLink = context.Principal.Claims.First().Value;
 			var currentIdentity = (ClaimsIdentity)context.Principal.Identity;
-			currentIdentity.AddClaim(new Claim("sub", steamId));
-			currentIdentity.AddClaim(new Claim("steam_id", steamId));
+			currentIdentity.AddClaim(new Claim("sub", steamLink));
 			currentIdentity.AddClaim(new Claim("idp", context.Scheme.Name));
 
 			await context.HttpContext.SignInAsync(IdentityConstants.ExternalScheme, context.Principal);
