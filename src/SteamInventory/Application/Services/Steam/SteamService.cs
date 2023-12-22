@@ -16,16 +16,16 @@ namespace SteamInventory.Application.Services.Steam
             _inventoryRequestUrl = configuration["ExternalApis:SteamWebApi"];
         }
 
-        public async Task<List<WaxpeerAsset>> GetInventoryAsync(long steamId, SteamGame game, CancellationToken cancellationToken = default)
+        public async Task<List<InventoryAsset>> GetInventoryAsync(long steamId, SteamGame game, CancellationToken cancellationToken = default)
         {
             var jsonInventory = await GetJsonInventoryAsync(steamId, game, cancellationToken);
             var jsonAssets = JArray.Parse(jsonInventory);
 
-            var steamAssets = new List<WaxpeerAsset>();
+            var steamAssets = new List<InventoryAsset>();
 
             foreach (var jsonAsset in jsonAssets)
             {
-                var steamAsset = new WaxpeerAsset
+                var steamAsset = new InventoryAsset
                 {
                     SteamUserId = steamId,
                     SteamGame = game,
