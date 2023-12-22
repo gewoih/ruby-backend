@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace SteamInventory.Application.Services.Waxpeer.Models
+namespace SteamInventory.Application.Models.Waxpeer
 {
     public sealed class WaxpeerItem
     {

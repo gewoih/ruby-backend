@@ -3,35 +3,22 @@ using Casino.SharedLibrary.Models;
 using Microsoft.AspNetCore.Mvc;
 using SteamInventory.Application.Models;
 using SteamInventory.Application.Models.Inventory;
-using SteamInventory.Application.Services.Steam;
+using SteamInventory.Application.Models.Waxpeer;
 using SteamInventory.Application.Services.Waxpeer;
-using SteamInventory.Application.Services.Waxpeer.Models;
 
 namespace SteamInventory.WebApi.Controllers
 {
     [Route("api/inventory")]
 	public class InventoryController : Controller
 	{
-		private readonly ISteamService _steamService;
 		private readonly IWaxpeerService _waxpeerService;
 
-		public InventoryController(ISteamService steamService, IWaxpeerService waxpeerService)
+		public InventoryController(IWaxpeerService waxpeerService)
 		{
-			_steamService = steamService;
 			_waxpeerService = waxpeerService;
 		}
 
-		[HttpGet("v1/{steamId}/{steamGame}")]
-		public async Task<IActionResult> GetInventory([Required] long steamId, [Required] SteamGame steamGame, CancellationToken cancellationToken)
-		{
-			var response = new ApiResponse<List<InventoryAsset>>();
-			var inventory = await _steamService.GetInventoryAsync(steamId, steamGame, cancellationToken);
-			return Ok(response.Success(inventory));
-		}
-
-		[HttpGet("v2")]
-		public async Task<IActionResult> GetInventoryV2([Required] long steamId, [Required] string tradeLink, [Required] SteamGame steamGame, 
-			CancellationToken cancellationToken)
+		public async Task<IActionResult> GetInventory([Required] long steamId, [Required] string tradeLink, [Required] SteamGame steamGame)
 		{
 			var response = new ApiResponse<List<InventoryAsset>>();
 
@@ -59,6 +46,12 @@ namespace SteamInventory.WebApi.Controllers
 				return BadRequest(response.Error("Произошла ошибка при выставлении предметов на продажу."));
 
 			return Ok(response.Success(itemsListed));
+		}
+
+		[HttpPost("sale-confirmation")]
+		public async Task<IActionResult> ConfirmSale([FromBody] SoldItemsWebhookDto soldItemsDto)
+		{
+			return Ok(soldItemsDto);
 		}
 	}
 }
