@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SteamInventory.Application.Models;
 using SteamInventory.Application.Models.Inventory;
-using SteamInventory.Application.Services.Waxpeer.Models;
+using SteamInventory.Application.Models.Waxpeer;
 
 namespace SteamInventory.Application.Services.Waxpeer
 {
