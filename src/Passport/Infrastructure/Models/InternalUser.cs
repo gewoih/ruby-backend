@@ -7,5 +7,6 @@ namespace Passport.Infrastructure.Models
 	{
 		public ExternalAuthenticationMethod AuthenticationMethod { get; set; }
 		public string ExternalId { get; set; }
+		public string SteamTradeLink { get; set; }
 	}
 }

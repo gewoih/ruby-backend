@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
 using Passport.Domain.Enums;
 using Passport.Infrastructure.Database;
@@ -19,12 +20,8 @@ namespace Passport.Application.Services.Users
 
 		public async Task<InternalUser> RegisterAsync(ExternalAuthenticationMethod authenticationMethod, string externalUserId)
 		{
-			InternalUser user;
-			try
-			{
-				user = await GetByExternalIdAsync(authenticationMethod, externalUserId);
-			}
-			catch (KeyNotFoundException)
+			var user = await GetByExternalIdAsync(authenticationMethod, externalUserId);
+			if (user is null)
 			{
 				user = new InternalUser
 				{
@@ -41,25 +38,27 @@ namespace Passport.Application.Services.Users
 			return user;
 		}
 
-		public async Task<InternalUser> GetByExternalIdAsync(ExternalAuthenticationMethod authenticationMethod, string externalUserId)
+		public async Task<InternalUser?> GetByExternalIdAsync(ExternalAuthenticationMethod authenticationMethod, string externalUserId)
 		{
 			var foundUser = await _context.Users.FirstOrDefaultAsync(user =>
 				user.AuthenticationMethod == authenticationMethod && 
 				user.ExternalId == externalUserId);
 
-			if (foundUser is null)
-				throw new KeyNotFoundException($"Пользователь с ExternalID '{externalUserId}' во внешнем сервисе '{authenticationMethod}' не найден.");
-
 			return foundUser;
 		}
 
-		public async Task<InternalUser> GetByIdAsync(Guid id)
+		public async Task<InternalUser?> GetByIdAsync(Guid id)
 		{
 			var foundUser = await _context.Users.FindAsync(id);
-			if (foundUser is null)
-				throw new KeyNotFoundException($"Пользователь с ID '{id}' не найден.");
-
 			return foundUser;
+		}
+
+		public async Task<bool> PatchUserAsync(InternalUser userToPatch, JsonPatchDocument<InternalUser> patchDocument)
+		{
+			patchDocument.ApplyTo(userToPatch);
+			var updatedRows = await _context.SaveChangesAsync();
+
+			return updatedRows > 0;
 		}
 	}
 }
