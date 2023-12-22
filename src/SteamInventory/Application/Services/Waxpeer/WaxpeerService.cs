@@ -9,7 +9,7 @@ using SteamInventory.Application.Services.Waxpeer.Models;
 
 namespace SteamInventory.Application.Services.Waxpeer
 {
-	public sealed class WaxpeerService : IWaxpeerService
+    public sealed class WaxpeerService : IWaxpeerService
 	{
 		private readonly IHttpClientFactory _httpClientFactory;
 		private readonly string _getUserInfoUrl;
@@ -17,6 +17,7 @@ namespace SteamInventory.Application.Services.Waxpeer
 		private readonly string _addUserUrl;
 		private readonly string _getInventoryInfoUrl;
 		private readonly string _getInventoryAssetsUrl;
+		private readonly string _sellItemsUrl;
 
 		public WaxpeerService(IHttpClientFactory httpClientFactory, IConfiguration configuration)
 		{
@@ -29,6 +30,7 @@ namespace SteamInventory.Application.Services.Waxpeer
 			_addUserUrl = string.Format(configuration["Waxpeer:Endpoints:AddUser"], apiKey, merchantName);
 			_getInventoryInfoUrl = string.Format(configuration["Waxpeer:Endpoints:GetInventoryInfo"], apiKey, merchantName, "{0}");
 			_getInventoryAssetsUrl = string.Format(configuration["Waxpeer:Endpoints:GetInventoryAssets"], apiKey, merchantName, "{0}", "{1}");
+			_sellItemsUrl = string.Format(configuration["Waxpeer:Endpoints:SellItems"], apiKey, merchantName, "{0}");
 		}
 
 		public async Task<UserInfo?> GetUserInfoAsync(long steamId)
@@ -74,20 +76,20 @@ namespace SteamInventory.Application.Services.Waxpeer
 			return JsonConvert.DeserializeObject<InventoryInfo>(responseContent);
 		}
 
-		public async Task<List<WaxpeerAsset>> GetSteamAssetsAsync(long steamId, SteamGame game)
+		public async Task<List<InventoryAsset>> GetSteamAssetsAsync(long steamId, SteamGame game)
 		{
 			var requestUrl = string.Format(_getInventoryAssetsUrl, steamId, (int)game);
 			var responseContent = await HttpUtils.GetAsync(_httpClientFactory, requestUrl);
 			var jsonObject = JObject.Parse(responseContent);
 
-			var assets = new List<WaxpeerAsset>();
+			var assets = new List<InventoryAsset>();
 			if (!jsonObject.Value<bool>("success"))
 				return assets;
 
 			var items = jsonObject.Value<JArray>("items");
 			foreach (var item in items)
 			{
-				var asset = new WaxpeerAsset
+				var asset = new InventoryAsset
 				{
 					AssetId = item.Value<long>("item_id"),
 					MarketName = item.Value<string>("name"),
@@ -116,6 +118,27 @@ namespace SteamInventory.Application.Services.Waxpeer
 			var tradeLinkInfo = JsonConvert.DeserializeObject<TradeLinkInfo>(responseContent);
 
 			return tradeLinkInfo;
+		}
+
+		public async Task<List<WaxpeerItem>> SellItemsAsync(string steamId, List<WaxpeerItem> items)
+		{
+			var requestUrl = string.Format(_sellItemsUrl, steamId);
+			var contentData = new
+			{
+				items
+			};
+
+			var serializedData = JsonConvert.SerializeObject(contentData);
+			var requestContent = new StringContent(serializedData, Encoding.UTF8, HttpUtils.JsonMediaType);
+			var responseContent = await HttpUtils.PostAsync(_httpClientFactory, requestUrl, requestContent);
+
+			var listedItems = new List<WaxpeerItem>();
+			var jsonResponse = JObject.Parse(responseContent);
+			if (!jsonResponse.Value<bool>("success"))
+				return listedItems;
+
+			listedItems = JsonConvert.DeserializeObject<List<WaxpeerItem>>(jsonResponse["items"].ToString());
+			return listedItems;
 		}
 	}
 }
