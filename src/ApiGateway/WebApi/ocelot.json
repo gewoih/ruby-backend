@@ -32,7 +32,7 @@
     {
         "UpstreamPathTemplate": "/api/inventory",
         "UpstreamHttpMethod": [ "Get" ],
-        "DownstreamPathTemplate": "/api/inventory/v2",
+        "DownstreamPathTemplate": "/api/inventory",
         "DownstreamScheme": "https",
         "DownstreamHostAndPorts": [
             {
