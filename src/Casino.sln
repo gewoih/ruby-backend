@@ -31,7 +31,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamInventory.Infrastructu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamInventory.Domain", "SteamInventory\Domain\SteamInventory.Domain\SteamInventory.Domain.csproj", "{F8F0DF85-D92B-49CE-BA96-3BC0F742D849}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Casino.SharedLibrary", "Casino.SharedLibrary\Casino.SharedLibrary.csproj", "{B33486D8-8FF5-421E-A350-3D7CB0E005EB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Casino.SharedLibrary", "Casino.SharedLibrary\Casino.SharedLibrary.csproj", "{B33486D8-8FF5-421E-A350-3D7CB0E005EB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DDAD9336-E6D9-450B-86F6-15BB3E3A87D5}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

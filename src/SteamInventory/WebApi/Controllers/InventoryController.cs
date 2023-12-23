@@ -18,31 +18,31 @@ namespace SteamInventory.WebApi.Controllers
 			_waxpeerService = waxpeerService;
 		}
 
+		[HttpGet]
 		public async Task<IActionResult> GetInventory([Required] long steamId, [Required] string tradeLink, [Required] SteamGame steamGame)
 		{
 			var response = new ApiResponse<List<InventoryAsset>>();
 
-			var waxpeerUserInfo = await _waxpeerService.GetUserInfoAsync(steamId);
-			if (waxpeerUserInfo is null)
-				waxpeerUserInfo = await _waxpeerService.AddUserAsync(steamId, tradeLink);
-
-			if (waxpeerUserInfo is null)
+			var waxpeerUserInfo = await _waxpeerService.GetUserInfoAsync(steamId) ?? await _waxpeerService.AddUserAsync(steamId, tradeLink);
+			
+            if (waxpeerUserInfo is null)
 				return BadRequest(response.Error("Невозможно получить инвентарь пользователя: указан некорректный SteamID"));
 
 			var steamAssets = await _waxpeerService.GetSteamAssetsAsync(steamId, steamGame);
 			return Ok(response.Success(steamAssets));
 		}
 
-		[HttpPost("items")]
+		[HttpPost("sell-items")]
 		public async Task<IActionResult> SellItems([Required] string steamId, [FromBody] List<WaxpeerItem> itemsToSell)
 		{
 			var response = new ApiResponse<List<WaxpeerItem>>();
 
-			if (!itemsToSell.Any())
+			if (itemsToSell.Count == 0)
 				return BadRequest(response.Error("Список предметов для продажи не может быть пустым."));
 
 			var itemsListed = await _waxpeerService.SellItemsAsync(steamId, itemsToSell);
-			if (!itemsListed.Any())
+			
+            if (itemsListed.Count == 0)
 				return BadRequest(response.Error("Произошла ошибка при выставлении предметов на продажу."));
 
 			return Ok(response.Success(itemsListed));
