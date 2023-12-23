@@ -1,3 +1,4 @@
+using MassTransit;
 using SteamInventory.Application.Services.Waxpeer;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +12,20 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddHttpClient();
 
 builder.Services.AddScoped<IWaxpeerService, WaxpeerService>();
+
+builder.Services.AddMassTransit(options =>
+{
+    options.UsingRabbitMq((context, configuration) =>
+    {
+		configuration.Host("localhost", "/", host =>
+        {
+            host.Username("guest");
+            host.Password("guest");
+        });
+
+        configuration.ConfigureEndpoints(context);
+    });
+});
 
 var app = builder.Build();
 

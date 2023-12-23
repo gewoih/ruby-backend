@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Casino.SharedLibrary.Models;
+using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using SteamInventory.Application.Models;
 using SteamInventory.Application.Models.Inventory;
@@ -12,11 +13,13 @@ namespace SteamInventory.WebApi.Controllers
 	public class InventoryController : Controller
 	{
 		private readonly IWaxpeerService _waxpeerService;
+        private readonly IBus _messagesBus;
 
-		public InventoryController(IWaxpeerService waxpeerService)
-		{
-			_waxpeerService = waxpeerService;
-		}
+		public InventoryController(IWaxpeerService waxpeerService, IBus messagesBus)
+        {
+            _waxpeerService = waxpeerService;
+            _messagesBus = messagesBus;
+        }
 
 		[HttpGet]
 		public async Task<IActionResult> GetInventory([Required] long steamId, [Required] string tradeLink, [Required] SteamGame steamGame)
@@ -50,7 +53,8 @@ namespace SteamInventory.WebApi.Controllers
 
 		[HttpPost("sale-confirmation")]
 		public async Task<IActionResult> ConfirmSale([FromBody] SoldItemsWebhookDto soldItemsDto)
-		{
+        {
+            await _messagesBus.Publish(soldItemsDto);
 			return Ok(soldItemsDto);
 		}
 	}
