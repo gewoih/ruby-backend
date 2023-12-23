@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace SteamInventory.Application.Models.Waxpeer
+namespace Wallet.Application.Models.Waxpeer
 {
 	public sealed class SoldItemDto
 	{

@@ -3,24 +3,24 @@ using Casino.SharedLibrary.MessageBus.TopUp;
 using Casino.SharedLibrary.Models;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
-using SteamInventory.Application.Models;
-using SteamInventory.Application.Models.Inventory;
-using SteamInventory.Application.Models.Waxpeer;
-using SteamInventory.Application.Services.Waxpeer;
+using Wallet.Application.Models;
+using Wallet.Application.Models.Inventory;
+using Wallet.Application.Models.Waxpeer;
+using Wallet.Application.Services.Waxpeer;
 
-namespace SteamInventory.WebApi.Controllers
+namespace Wallet.WebApi.Controllers
 {
-    [Route("api/inventory")]
+	[Route("api/inventory")]
 	public class InventoryController : Controller
 	{
 		private readonly IWaxpeerService _waxpeerService;
-        private readonly IBus _messagesBus;
+		private readonly IBus _messagesBus;
 
 		public InventoryController(IWaxpeerService waxpeerService, IBus messagesBus)
-        {
-            _waxpeerService = waxpeerService;
-            _messagesBus = messagesBus;
-        }
+		{
+			_waxpeerService = waxpeerService;
+			_messagesBus = messagesBus;
+		}
 
 		[HttpGet]
 		public async Task<IActionResult> GetInventory([Required] long steamId, [Required] string tradeLink, [Required] SteamGame steamGame)
@@ -28,8 +28,8 @@ namespace SteamInventory.WebApi.Controllers
 			var response = new ApiResponse<List<InventoryAsset>>();
 
 			var waxpeerUserInfo = await _waxpeerService.GetUserInfoAsync(steamId) ?? await _waxpeerService.AddUserAsync(steamId, tradeLink);
-			
-            if (waxpeerUserInfo is null)
+
+			if (waxpeerUserInfo is null)
 				return BadRequest(response.Error("Невозможно получить инвентарь пользователя: указан некорректный SteamID"));
 
 			var steamAssets = await _waxpeerService.GetSteamAssetsAsync(steamId, steamGame);
@@ -45,8 +45,8 @@ namespace SteamInventory.WebApi.Controllers
 				return BadRequest(response.Error("Список предметов для продажи не может быть пустым."));
 
 			var itemsListed = await _waxpeerService.SellItemsAsync(steamId, itemsToSell);
-			
-            if (itemsListed.Count == 0)
+
+			if (itemsListed.Count == 0)
 				return BadRequest(response.Error("Произошла ошибка при выставлении предметов на продажу."));
 
 			return Ok(response.Success(itemsListed));
@@ -54,18 +54,18 @@ namespace SteamInventory.WebApi.Controllers
 
 		[HttpPost("sale-confirmation")]
 		public async Task<IActionResult> ConfirmSale([FromBody] SoldItemsWebhookDto soldItemsDto)
-        {
-            var topUp = new BalanceTopUp
-            {
-                Amount = soldItemsDto.Items
-                    .Where(item => item.Status.Equals(5))
-                    .Sum(item => item.Price),
-                
-                Type = TopUpType.Skins,
-                UserId = Guid.Empty
-            };
+		{
+			var topUp = new BalanceTopUp
+			{
+				Amount = soldItemsDto.Items
+					.Where(item => item.Status.Equals(5))
+					.Sum(item => item.Price),
 
-            await _messagesBus.Publish(topUp);
+				Type = TopUpType.Skins,
+				UserId = Guid.Empty
+			};
+
+			await _messagesBus.Publish(topUp);
 			return Ok(soldItemsDto);
 		}
 	}

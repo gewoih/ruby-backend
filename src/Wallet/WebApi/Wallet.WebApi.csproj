@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Application\SteamInventory.Application.csproj" />
+    <ProjectReference Include="..\Application\Wallet.Application.csproj" />
   </ItemGroup>
 
 </Project>

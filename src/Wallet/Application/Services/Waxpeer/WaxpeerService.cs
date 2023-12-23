@@ -3,13 +3,13 @@ using Casino.SharedLibrary.Utils;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SteamInventory.Application.Models;
-using SteamInventory.Application.Models.Inventory;
-using SteamInventory.Application.Models.Waxpeer;
+using Wallet.Application.Models;
+using Wallet.Application.Models.Inventory;
+using Wallet.Application.Models.Waxpeer;
 
-namespace SteamInventory.Application.Services.Waxpeer
+namespace Wallet.Application.Services.Waxpeer
 {
-    public sealed class WaxpeerService : IWaxpeerService
+	public sealed class WaxpeerService : IWaxpeerService
 	{
 		private readonly IHttpClientFactory _httpClientFactory;
 		private readonly string _getUserInfoUrl;

@@ -1,10 +1,10 @@
-﻿using SteamInventory.Application.Models;
-using SteamInventory.Application.Models.Inventory;
-using SteamInventory.Application.Models.Waxpeer;
+﻿using Wallet.Application.Models;
+using Wallet.Application.Models.Inventory;
+using Wallet.Application.Models.Waxpeer;
 
-namespace SteamInventory.Application.Services.Waxpeer
+namespace Wallet.Application.Services.Waxpeer
 {
-    public interface IWaxpeerService
+	public interface IWaxpeerService
 	{
 		Task<UserInfo?> GetUserInfoAsync(long steamId);
 		Task<UserInfo?> AddUserAsync(long steamId, string tradeLink);

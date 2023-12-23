@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Casino.SharedLibrary\Casino.SharedLibrary.csproj" />
-    <ProjectReference Include="..\Domain\SteamInventory.Domain\SteamInventory.Domain.csproj" />
+    <ProjectReference Include="..\Domain\SteamInventory.Domain\Wallet.Domain.csproj" />
   </ItemGroup>
 
 </Project>

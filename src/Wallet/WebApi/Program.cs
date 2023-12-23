@@ -1,5 +1,5 @@
 using MassTransit;
-using SteamInventory.Application.Services.Waxpeer;
+using Wallet.Application.Services.Waxpeer;
 
 var builder = WebApplication.CreateBuilder(args);
 
