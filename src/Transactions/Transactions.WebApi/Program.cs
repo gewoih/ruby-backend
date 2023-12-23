@@ -1,13 +1,11 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using Transactions.Application.Services.Transactions;
 using Transactions.Infrastructure.Database;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -16,6 +14,8 @@ builder.Services.AddDbContext<TransactionsDbContext>(options =>
 {
     options.UseNpgsql(connectionString);
 });
+
+builder.Services.AddScoped<IBalanceTransactionsService, BalanceTransactionsService>();
 
 builder.Services.AddMassTransit(options =>
 {
