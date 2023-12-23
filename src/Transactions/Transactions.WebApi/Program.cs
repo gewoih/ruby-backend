@@ -19,6 +19,8 @@ builder.Services.AddScoped<IBalanceTransactionsService, BalanceTransactionsServi
 
 builder.Services.AddMassTransit(options =>
 {
+    options.AddConsumer<BalanceTransactionsService>();
+
     options.UsingRabbitMq((context, configuration) =>
     {
         configuration.Host("localhost", "/", host =>

@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Casino.SharedLibrary.MessageBus.TopUp;
+using MassTransit;
+using Microsoft.EntityFrameworkCore;
 using Transactions.Infrastructure.Database;
 using Transactions.Infrastructure.Models;
 
@@ -36,5 +38,18 @@ namespace Transactions.Application.Services.Transactions
 
             return balance;
         }
+
+        public async Task Consume(ConsumeContext<BalanceTopUp> context)
+        {
+            var balanceTransaction = new BalanceTransaction
+            {
+                CreatedDate = DateTime.UtcNow,
+                UserId = context.Message.UserId,
+                AdjustmentAmount = context.Message.Amount
+            };
+
+			await _context.BalanceTransactions.AddAsync(balanceTransaction);
+            await _context.SaveChangesAsync();
+		}
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Casino.SharedLibrary.MessageBus.TopUp;
 using Casino.SharedLibrary.Models;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
@@ -54,7 +55,17 @@ namespace SteamInventory.WebApi.Controllers
 		[HttpPost("sale-confirmation")]
 		public async Task<IActionResult> ConfirmSale([FromBody] SoldItemsWebhookDto soldItemsDto)
         {
-            await _messagesBus.Publish(soldItemsDto);
+            var topUp = new BalanceTopUp
+            {
+                Amount = soldItemsDto.Items
+                    .Where(item => item.Status.Equals(5))
+                    .Sum(item => item.Price),
+                
+                Type = TopUpType.Skins,
+                UserId = Guid.Empty
+            };
+
+            await _messagesBus.Publish(topUp);
 			return Ok(soldItemsDto);
 		}
 	}

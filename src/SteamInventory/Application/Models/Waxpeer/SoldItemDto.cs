@@ -13,7 +13,7 @@ namespace SteamInventory.Application.Models.Waxpeer
 		[JsonProperty("name")]
 		public string Name { get; set; }
 
-		[JsonProperty("received")]
+		[JsonProperty("currency_value")]
 		public decimal Price { get; set; }
 
 		[JsonProperty("img")]
