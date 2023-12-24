@@ -30,8 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Infrastructure\Passport.Infrastructure.csproj" />
-    <ProjectReference Include="..\Application\Passport.Application.csproj" />
+    <ProjectReference Include="..\Passport.Application\Passport.Application.csproj" />
   </ItemGroup>
 
 </Project>

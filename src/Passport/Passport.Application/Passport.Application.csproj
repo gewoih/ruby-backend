@@ -16,7 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Infrastructure\Passport.Infrastructure.csproj" />
+    <ProjectReference Include="..\Passport.Domain\Passport.Domain.csproj" />
+    <ProjectReference Include="..\Passport.Infrastructure\Passport.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

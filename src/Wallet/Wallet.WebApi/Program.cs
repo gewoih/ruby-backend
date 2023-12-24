@@ -1,7 +1,6 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Wallet.Application.Services.Wallet;
-using Wallet.Infrastructure;
 using Wallet.Infrastructure.Database;
 using Wallet.Infrastructure.Services.Waxpeer;
 
