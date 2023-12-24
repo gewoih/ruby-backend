@@ -1,9 +1,9 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Wallet.Application.Services.Wallet;
-using Wallet.Application.Services.Waxpeer;
 using Wallet.Infrastructure;
 using Wallet.Infrastructure.Database;
+using Wallet.Infrastructure.Services.Waxpeer;
 
 var builder = WebApplication.CreateBuilder(args);
 

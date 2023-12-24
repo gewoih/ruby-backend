@@ -1,4 +1,4 @@
-﻿namespace Wallet.Application.Models.Waxpeer
+﻿namespace Wallet.Infrastructure.Models.Waxpeer
 {
 	public sealed class TradeLinkInfo
 	{

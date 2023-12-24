@@ -39,13 +39,14 @@ namespace Transactions.Application.Services.Transactions
             return balance;
         }
 
-        public async Task Consume(ConsumeContext<BalanceTopUp> context)
+        public async Task Consume(ConsumeContext<PaymentMessage> context)
         {
             var balanceTransaction = new BalanceTransaction
             {
                 CreatedDate = DateTime.UtcNow,
                 UserId = context.Message.UserId,
-                AdjustmentAmount = context.Message.Amount
+                AdjustmentAmount = context.Message.Amount,
+                PaymentId = context.Message.PaymentId
             };
 
 			await _context.BalanceTransactions.AddAsync(balanceTransaction);

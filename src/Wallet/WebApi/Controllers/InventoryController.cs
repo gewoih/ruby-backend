@@ -4,11 +4,12 @@ using Casino.SharedLibrary.MessageBus.TopUp;
 using Casino.SharedLibrary.Models;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
-using Wallet.Application.Models.Waxpeer;
 using Wallet.Application.Services.Wallet;
-using Wallet.Application.Services.Waxpeer;
+using Wallet.Application.Utils;
 using Wallet.Domain.Enums;
 using Wallet.Domain.Models;
+using Wallet.Infrastructure.Models.Waxpeer;
+using Wallet.Infrastructure.Services.Waxpeer;
 
 namespace Wallet.WebApi.Controllers
 {
@@ -56,25 +57,8 @@ namespace Wallet.WebApi.Controllers
 			if (itemsListed.Count == 0)
 				return BadRequest(response.Error("Произошла ошибка при выставлении предметов на продажу."));
 
-            var inventoryAssets = itemsListed.Select(item => new InventoryAsset
-            {
-                UserId = userId,
-                SteamGame = SteamGame.CounterStrike,
-                Price = item.Price,
-                Name = item.Name,
-                AssetId = item.ItemId
-            }).ToList();
-
-            var waxpeerPayment = new WaxpeerPayment
-            {
-                SteamId = steamId,
-                Amount = itemsListed.Sum(item => item.Price),
-                UserId = userId,
-                CreatedDate = DateTime.UtcNow,
-                Items = inventoryAssets,
-                Status = PaymentStatus.Created
-            };
-            await _walletService.AddWaxpeerPayment(waxpeerPayment);
+            var inventoryAssets = itemsListed.ToInventoryAssets(userId);
+			var waxpeerPayment = await _walletService.CreateWaxpeerPayment(userId, steamId, inventoryAssets);
             
 			return Ok(response.Success(waxpeerPayment));
 		}
@@ -82,21 +66,25 @@ namespace Wallet.WebApi.Controllers
 		[HttpPost("sale-confirmation")]
 		public async Task<IActionResult> ConfirmSale([FromBody] SoldItemsWebhookDto soldItemsDto)
         {
-            var activePayment = await _walletService.GetActivePayment(soldItemsDto.SteamId);
-            if (activePayment is null)
-                throw new KeyNotFoundException($"Не найден активный платеж для пользователя Steam '{soldItemsDto.SteamId}'");
-            
-			var topUp = new BalanceTopUp
+            var activePayment = await _walletService.GetActivePayment(soldItemsDto.SteamId) 
+                                ?? throw new KeyNotFoundException($"Не найден активный платеж для пользователя Steam '{soldItemsDto.SteamId}'");
+
+            var paymentMessage = new PaymentMessage
 			{
 				Amount = soldItemsDto.Items
 					.Where(item => item.Status.Equals(5))
 					.Sum(item => item.Price),
 
 				Type = TopUpType.Skins,
-				UserId = activePayment.UserId
+				UserId = activePayment.UserId,
+				PaymentId = activePayment.Id
 			};
 
-			await _messagesBus.Publish(topUp);
+			await _messagesBus.Publish(paymentMessage);
+
+            activePayment.Status = PaymentStatus.Completed;
+            await _walletService.UpdatePayment(activePayment);
+
 			return Ok(soldItemsDto);
 		}
 	}
