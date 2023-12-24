@@ -1,10 +1,10 @@
 ﻿using System.Text;
+using Casino.SharedLibrary.Enums;
 using Casino.SharedLibrary.Utils;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Wallet.Application.Models;
-using Wallet.Application.Models.Inventory;
 using Wallet.Application.Models.Waxpeer;
 
 namespace Wallet.Application.Services.Waxpeer
@@ -76,25 +76,25 @@ namespace Wallet.Application.Services.Waxpeer
 			return JsonConvert.DeserializeObject<InventoryInfo>(responseContent);
 		}
 
-		public async Task<List<InventoryAsset>> GetSteamAssetsAsync(long steamId, SteamGame game)
+		public async Task<List<WaxpeerInventoryAsset>> GetSteamAssetsAsync(long steamId, SteamGame game)
 		{
 			var requestUrl = string.Format(_getInventoryAssetsUrl, steamId, (int)game);
 			var responseContent = await HttpUtils.GetAsync(_httpClientFactory, requestUrl);
 			var jsonObject = JObject.Parse(responseContent);
 
-			var assets = new List<InventoryAsset>();
+			var assets = new List<WaxpeerInventoryAsset>();
 			if (!jsonObject.Value<bool>("success"))
 				return assets;
 
 			var items = jsonObject.Value<JArray>("items");
 			foreach (var item in items)
 			{
-				var asset = new InventoryAsset
+				var asset = new WaxpeerInventoryAsset
 				{
-					AssetId = item.Value<long>("item_id"),
-					MarketName = item.Value<string>("name"),
-					Marketable = item.Value<bool>("limit") == false && item.Value<int>("instant_price") > 0,
-					MarketPrice = item.Value<int>("instant_price"),
+					ItemId = item.Value<long>("item_id"),
+					Name = item.Value<string>("name"),
+					Marketable = !item.Value<bool>("limit") && item.Value<int>("instant_price") > 0,
+					Price = item.Value<int>("instant_price"),
 					ImageUrl = item.Value<JObject>("steam_price").Value<string>("img"),
 				};
 
@@ -120,7 +120,7 @@ namespace Wallet.Application.Services.Waxpeer
 			return tradeLinkInfo;
 		}
 
-		public async Task<List<WaxpeerItem>> SellItemsAsync(string steamId, List<WaxpeerItem> items)
+		public async Task<List<SellItemDto>> SellItemsAsync(long steamId, List<SellItemDto> items)
 		{
 			var requestUrl = string.Format(_sellItemsUrl, steamId);
 			var contentData = new
@@ -132,12 +132,12 @@ namespace Wallet.Application.Services.Waxpeer
 			var requestContent = new StringContent(serializedData, Encoding.UTF8, HttpUtils.JsonMediaType);
 			var responseContent = await HttpUtils.PostAsync(_httpClientFactory, requestUrl, requestContent);
 
-			var listedItems = new List<WaxpeerItem>();
+			var listedItems = new List<SellItemDto>();
 			var jsonResponse = JObject.Parse(responseContent);
 			if (!jsonResponse.Value<bool>("success"))
 				return listedItems;
 
-			listedItems = JsonConvert.DeserializeObject<List<WaxpeerItem>>(jsonResponse["items"].ToString());
+			listedItems = JsonConvert.DeserializeObject<List<SellItemDto>>(jsonResponse["listed"].ToString());
 			return listedItems;
 		}
 	}

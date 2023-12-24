@@ -2,7 +2,7 @@
 
 namespace Wallet.Application.Models.Waxpeer
 {
-	public sealed class WaxpeerItem
+	public sealed class SellItemDto
 	{
 		[JsonProperty("item_id")]
 		public long ItemId { get; set; }

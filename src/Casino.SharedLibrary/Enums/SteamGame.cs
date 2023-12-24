@@ -1,4 +1,4 @@
-﻿namespace Wallet.Application.Models
+﻿namespace Casino.SharedLibrary.Enums
 {
 	public enum SteamGame
 	{

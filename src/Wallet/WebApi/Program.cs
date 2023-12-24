@@ -1,5 +1,9 @@
 using MassTransit;
+using Microsoft.EntityFrameworkCore;
+using Wallet.Application.Services.Wallet;
 using Wallet.Application.Services.Waxpeer;
+using Wallet.Infrastructure;
+using Wallet.Infrastructure.Database;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +15,13 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddHttpClient();
 
+var connectionString = builder.Configuration.GetConnectionString("Default");
+builder.Services.AddDbContext<WalletDbContext>(options =>
+{
+    options.UseNpgsql(connectionString);
+});
+
+builder.Services.AddScoped<IWalletService, WalletService>();
 builder.Services.AddScoped<IWaxpeerService, WaxpeerService>();
 
 builder.Services.AddMassTransit(options =>
@@ -40,5 +51,9 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+var scope = app.Services.CreateScope();
+var database = scope.ServiceProvider.GetService<WalletDbContext>()?.Database;
+await database.MigrateAsync();
 
 app.Run();
