@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Passport.Application.Services.Users;
-using Passport.Infrastructure.Models;
+using Passport.Domain.Models;
 
 namespace Passport.WebApi.Controllers
 {

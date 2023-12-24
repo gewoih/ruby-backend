@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Passport.Infrastructure.Models;
+using Passport.Domain.Models;
 
 namespace Passport.Infrastructure.Database
 {

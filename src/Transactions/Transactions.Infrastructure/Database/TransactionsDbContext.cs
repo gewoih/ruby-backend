@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Transactions.Infrastructure.Models;
+using Transactions.Domain.Models;
 
 namespace Transactions.Infrastructure.Database
 {

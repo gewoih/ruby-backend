@@ -1,4 +1,4 @@
-﻿namespace Transactions.Infrastructure.Models
+﻿namespace Transactions.Domain.Models
 {
 	public sealed class BalanceTransaction
 	{

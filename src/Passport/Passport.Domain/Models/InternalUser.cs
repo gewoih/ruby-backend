@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Passport.Domain.Enums;
 
-namespace Passport.Infrastructure.Models
+namespace Passport.Domain.Models
 {
 	public sealed class InternalUser : IdentityUser<Guid>
 	{

@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Passport.Application.ProfileServices;
 using Passport.Application.Services.Users;
+using Passport.Domain.Models;
 using Passport.Infrastructure.Database;
-using Passport.Infrastructure.Models;
 using Passport.WebApi.Config;
 
 var builder = WebApplication.CreateBuilder(args);

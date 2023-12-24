@@ -1,8 +1,8 @@
 ﻿using Casino.SharedLibrary.MessageBus.TopUp;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using Transactions.Domain.Models;
 using Transactions.Infrastructure.Database;
-using Transactions.Infrastructure.Models;
 
 namespace Transactions.Application.Services.Transactions
 {

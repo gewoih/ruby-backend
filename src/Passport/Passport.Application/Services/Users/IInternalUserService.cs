@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.JsonPatch;
 using Passport.Domain.Enums;
-using Passport.Infrastructure.Models;
+using Passport.Domain.Models;
 
 namespace Passport.Application.Services.Users
 {
