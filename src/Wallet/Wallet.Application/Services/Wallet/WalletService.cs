@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Wallet.Domain.Enums;
-using Wallet.Domain.Models;
+using Wallet.Domain.Models.Wallet;
 using Wallet.Infrastructure.Database;
 
 namespace Wallet.Application.Services.Wallet

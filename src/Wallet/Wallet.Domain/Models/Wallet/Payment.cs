@@ -1,6 +1,6 @@
 ﻿using Wallet.Domain.Enums;
 
-namespace Wallet.Domain.Models
+namespace Wallet.Domain.Models.Wallet
 {
     public abstract class Payment
     {

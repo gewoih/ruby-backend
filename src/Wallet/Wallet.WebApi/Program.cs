@@ -1,5 +1,6 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using Wallet.Application.Services.Promocodes;
 using Wallet.Application.Services.Wallet;
 using Wallet.Infrastructure.Database;
 using Wallet.Infrastructure.Services.Waxpeer;
@@ -22,6 +23,7 @@ builder.Services.AddDbContext<WalletDbContext>(options =>
 
 builder.Services.AddScoped<IWalletService, WalletService>();
 builder.Services.AddScoped<IWaxpeerService, WaxpeerService>();
+builder.Services.AddScoped<IPromocodesService, PromocodesService>();
 
 builder.Services.AddMassTransit(options =>
 {

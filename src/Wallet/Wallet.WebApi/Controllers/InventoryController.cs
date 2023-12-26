@@ -7,13 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 using Wallet.Application.Services.Wallet;
 using Wallet.Application.Utils;
 using Wallet.Domain.Enums;
-using Wallet.Domain.Models;
+using Wallet.Domain.Models.Wallet;
 using Wallet.Infrastructure.Models.Waxpeer;
 using Wallet.Infrastructure.Services.Waxpeer;
 
 namespace Wallet.WebApi.Controllers
 {
-	[Route("api/inventory")]
+    [Route("api/inventory")]
 	public class InventoryController : Controller
     {
 		private readonly IWaxpeerService _waxpeerService;
@@ -75,7 +75,7 @@ namespace Wallet.WebApi.Controllers
 					.Where(item => item.Status.Equals(5))
 					.Sum(item => item.Price),
 
-				Type = TopUpType.Skins,
+				Type = PaymentType.Skins,
 				UserId = activePayment.UserId,
 				PaymentId = activePayment.Id
 			};

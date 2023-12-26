@@ -1,10 +1,10 @@
 ﻿using Casino.SharedLibrary.Enums;
-using Wallet.Domain.Models;
+using Wallet.Domain.Models.Wallet;
 using Wallet.Infrastructure.Models.Waxpeer;
 
 namespace Wallet.Application.Utils
 {
-	public static class InventoryAssetsUtils
+    public static class InventoryAssetsUtils
 	{
 		public static List<InventoryAsset> ToInventoryAssets(this List<SellItemDto> listedItems, Guid userId)
 		{
