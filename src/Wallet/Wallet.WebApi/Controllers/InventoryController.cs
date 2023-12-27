@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Casino.SharedLibrary.Enums;
-using Casino.SharedLibrary.MessageBus.TopUp;
+using Casino.SharedLibrary.MessageBus.Transactions;
 using Casino.SharedLibrary.Models;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
@@ -69,17 +69,17 @@ namespace Wallet.WebApi.Controllers
             var activePayment = await _walletService.GetActivePayment(soldItemsDto.SteamId) 
                                 ?? throw new KeyNotFoundException($"Не найден активный платеж для пользователя Steam '{soldItemsDto.SteamId}'");
 
-            var paymentMessage = new PaymentMessage
+            var paymentMessage = new TransactionTrigger
 			{
 				Amount = soldItemsDto.Items
 					.Where(item => item.Status.Equals(5))
 					.Sum(item => item.Price),
 
-				Type = PaymentType.Skins,
+				Type = TransactionTriggerType.Payment,
 				UserId = activePayment.UserId,
-				PaymentId = activePayment.Id
+				TriggerId = activePayment.Id
 			};
-
+            
 			await _messagesBus.Publish(paymentMessage);
 
             activePayment.Status = PaymentStatus.Completed;

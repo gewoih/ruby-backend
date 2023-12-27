@@ -1,4 +1,5 @@
-﻿using MassTransit;
+﻿using Casino.SharedLibrary.MessageBus.Transactions;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Wallet.Domain.Enums;
 using Wallet.Domain.Models;
@@ -9,12 +10,12 @@ namespace Wallet.Application.Services.Promocodes
 	public sealed class PromocodesService : IPromocodesService
     {
         private readonly WalletDbContext _context;
-        private readonly IBus _messagesBus;
+        private readonly IBus _bus;
 
-        public PromocodesService(WalletDbContext context, IBus messagesBus)
+        public PromocodesService(WalletDbContext context, IBus bus)
         {
             _context = context;
-            _messagesBus = messagesBus;
+            _bus = bus;
         }
 
         public async Task<bool> ActivateAsync(Guid userId, string code)
@@ -29,7 +30,13 @@ namespace Wallet.Application.Services.Promocodes
             promocode.ActivatedDateTime = DateTime.UtcNow;
             await _context.SaveChangesAsync();
 
-            await _messagesBus.Publish(promocode);
+            await _bus.Publish(new TransactionTrigger
+            {
+                TriggerId = promocode.Id,
+                UserId = promocode.UserId,
+                Amount = promocode.Amount,
+                Type = TransactionTriggerType.Promocode
+            });
 
             return true;
         }
