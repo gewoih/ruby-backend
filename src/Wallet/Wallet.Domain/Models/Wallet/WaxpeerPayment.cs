@@ -1,4 +1,4 @@
-﻿namespace Wallet.Domain.Models
+﻿namespace Wallet.Domain.Models.Wallet
 {
     public sealed class WaxpeerPayment : Payment
     {

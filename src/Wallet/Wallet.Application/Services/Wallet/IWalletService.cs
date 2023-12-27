@@ -1,4 +1,4 @@
-﻿using Wallet.Domain.Models;
+﻿using Wallet.Domain.Models.Wallet;
 
 namespace Wallet.Application.Services.Wallet
 {

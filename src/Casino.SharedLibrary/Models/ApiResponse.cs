@@ -1,6 +1,6 @@
 ﻿namespace Casino.SharedLibrary.Models
 {
-	public sealed class ApiResponse<T> where T : class
+	public sealed class ApiResponse<T>
 	{
 		public bool Succeeded { get; private set; }
 		public string Message { get; private set; }

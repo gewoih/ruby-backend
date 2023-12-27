@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Casino.SharedLibrary\Casino.SharedLibrary.csproj" />
+  </ItemGroup>
+
 </Project>
