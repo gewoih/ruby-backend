@@ -1,3 +1,4 @@
+using Casino.SharedLibrary.Services.MessageBus;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Wallet.Application.Services.Promocodes;
@@ -21,6 +22,7 @@ builder.Services.AddDbContext<WalletDbContext>(options =>
     options.UseNpgsql(connectionString);
 });
 
+builder.Services.AddScoped<IMessageBusService, MessageBusService>();
 builder.Services.AddScoped<IWalletService, WalletService>();
 builder.Services.AddScoped<IWaxpeerService, WaxpeerService>();
 builder.Services.AddScoped<IPromocodesService, PromocodesService>();
