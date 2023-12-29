@@ -35,7 +35,10 @@ namespace Wallet.Infrastructure.Services.Waxpeer
         public async Task<UserInfo?> GetUserInfoAsync(long steamId)
         {
             var requestUrl = string.Format(_getUserInfoUrl, steamId);
-            var responseContent = await HttpUtils.GetAsync(_httpClientFactory, requestUrl);
+            
+            var httpClient = _httpClientFactory.CreateClient();
+            var responseContent = await HttpUtils.GetAsync(httpClient, requestUrl);
+            
             var jsonObject = JObject.Parse(responseContent);
             if (!jsonObject.Value<bool>("success"))
                 return null;
@@ -56,7 +59,10 @@ namespace Wallet.Infrastructure.Services.Waxpeer
 
             var serializedData = JsonConvert.SerializeObject(contentData);
             var requestContent = new StringContent(serializedData, Encoding.UTF8, HttpUtils.JsonMediaType);
-            var responseContent = await HttpUtils.PostAsync(_httpClientFactory, _addUserUrl, requestContent);
+
+            var httpClient = _httpClientFactory.CreateClient();
+            var responseContent = await HttpUtils.PostAsync(httpClient, _addUserUrl, requestContent);
+
             var jsonObject = JObject.Parse(responseContent);
             if (!jsonObject.Value<bool>("success"))
                 return null;
@@ -70,7 +76,9 @@ namespace Wallet.Infrastructure.Services.Waxpeer
         public async Task<InventoryInfo?> GetInventoryInfoAsync(long steamId)
         {
             var requestUrl = string.Format(_getInventoryInfoUrl, steamId);
-            var responseContent = await HttpUtils.GetAsync(_httpClientFactory, requestUrl);
+
+            var httpClient = _httpClientFactory.CreateClient();
+            var responseContent = await HttpUtils.GetAsync(httpClient, requestUrl);
 
             return JsonConvert.DeserializeObject<InventoryInfo>(responseContent);
         }
@@ -78,7 +86,9 @@ namespace Wallet.Infrastructure.Services.Waxpeer
         public async Task<List<WaxpeerInventoryAsset>> GetSteamAssetsAsync(long steamId, SteamGame game)
         {
             var requestUrl = string.Format(_getInventoryAssetsUrl, steamId, (int)game);
-            var responseContent = await HttpUtils.GetAsync(_httpClientFactory, requestUrl);
+
+            var httpClient = _httpClientFactory.CreateClient();
+            var responseContent = await HttpUtils.GetAsync(httpClient, requestUrl);
             var jsonObject = JObject.Parse(responseContent);
 
             var assets = new List<WaxpeerInventoryAsset>();
@@ -112,7 +122,9 @@ namespace Wallet.Infrastructure.Services.Waxpeer
 
             var serializedData = JsonConvert.SerializeObject(contentData);
             var requestContent = new StringContent(serializedData, Encoding.UTF8, HttpUtils.JsonMediaType);
-            var responseContent = await HttpUtils.PostAsync(_httpClientFactory, _getTradeLinkInfoUrl, requestContent);
+
+            var httpClient = _httpClientFactory.CreateClient();
+            var responseContent = await HttpUtils.PostAsync(httpClient, _getTradeLinkInfoUrl, requestContent);
 
             var tradeLinkInfo = JsonConvert.DeserializeObject<TradeLinkInfo>(responseContent);
 
@@ -129,7 +141,9 @@ namespace Wallet.Infrastructure.Services.Waxpeer
 
             var serializedData = JsonConvert.SerializeObject(contentData);
             var requestContent = new StringContent(serializedData, Encoding.UTF8, HttpUtils.JsonMediaType);
-            var responseContent = await HttpUtils.PostAsync(_httpClientFactory, requestUrl, requestContent);
+
+            var httpClient = _httpClientFactory.CreateClient();
+            var responseContent = await HttpUtils.PostAsync(httpClient, requestUrl, requestContent);
 
             var listedItems = new List<SellItemDto>();
             var jsonResponse = JObject.Parse(responseContent);

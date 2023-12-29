@@ -4,9 +4,8 @@
     {
         public const string JsonMediaType = "application/json";
 
-        public static async Task<string> GetAsync(IHttpClientFactory httpClientFactory, string requestUrl)
+        public static async Task<string> GetAsync(HttpClient httpClient, string requestUrl)
         {
-            var httpClient = httpClientFactory.CreateClient();
             var response = await httpClient.GetAsync(requestUrl);
 
             response.EnsureSuccessStatusCode();
@@ -15,9 +14,8 @@
             return stringContent;
         }
 
-        public static async Task<string> PostAsync(IHttpClientFactory httpClientFactory, string requestUrl, HttpContent content)
+        public static async Task<string> PostAsync(HttpClient httpClient, string requestUrl, HttpContent content)
         {
-            var httpClient = httpClientFactory.CreateClient();
             var response = await httpClient.PostAsync(requestUrl, content);
 
             response.EnsureSuccessStatusCode();
