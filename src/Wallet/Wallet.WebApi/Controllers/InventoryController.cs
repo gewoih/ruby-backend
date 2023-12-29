@@ -1,12 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Casino.SharedLibrary.Attributes;
 using Casino.SharedLibrary.Enums;
-using Casino.SharedLibrary.MessageBus.Transactions;
 using Casino.SharedLibrary.Models;
-using MassTransit;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Wallet.Application.Services.Wallet;
 using Wallet.Application.Utils;
-using Wallet.Domain.Enums;
 using Wallet.Domain.Models.Wallet;
 using Wallet.Infrastructure.Models.Waxpeer;
 using Wallet.Infrastructure.Services.Waxpeer;
@@ -18,18 +17,22 @@ namespace Wallet.WebApi.Controllers
     {
 		private readonly IWaxpeerService _waxpeerService;
         private readonly IWalletService _walletService;
-		private readonly IBus _messagesBus;
 
-		public InventoryController(IWaxpeerService waxpeerService, IWalletService walletService, IBus messagesBus)
+		public InventoryController(IWaxpeerService waxpeerService, IWalletService walletService)
 		{
             _waxpeerService = waxpeerService;
             _walletService = walletService;
-            _messagesBus = messagesBus;
 		}
 
 		[HttpGet]
-		public async Task<IActionResult> Inventory([Required] long steamId, [Required] string tradeLink, [Required] SteamGame steamGame)
+		public async Task<IActionResult> Inventory(
+            [Required, NotEmpty] long steamId,
+            [Required, NotEmpty] string tradeLink, 
+            [Required, NotEmpty] SteamGame steamGame)
 		{
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
 			var response = new ApiResponse<List<WaxpeerInventoryAsset>>();
 
 			var waxpeerUserInfo = await _waxpeerService.GetUserInfoAsync(steamId) ?? await _waxpeerService.AddUserAsync(steamId, tradeLink);
@@ -42,16 +45,15 @@ namespace Wallet.WebApi.Controllers
 		}
 
 		[HttpPost("sell-items")]
-		public async Task<IActionResult> SellItems(Guid userId, long steamId, [FromBody] List<SellItemDto> itemsToSell)
+		public async Task<IActionResult> SellItems(
+            [NotEmpty] Guid userId, 
+            [NotEmpty] long steamId, 
+            [FromBody, MinLength(1)] List<SellItemDto> itemsToSell)
 		{
-			var response = new ApiResponse<WaxpeerPayment>();
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            if (userId == Guid.Empty)
-                return BadRequest(response.Error("UserId не может быть пустым."));
-            if (steamId == 0)
-                return BadRequest(response.Error("SteamId не может быть пустым."));
-			if (itemsToSell.Count == 0)
-				return BadRequest(response.Error("Список предметов для продажи не может быть пустым."));
+			var response = new ApiResponse<WaxpeerPayment>();
 
 			var itemsListed = await _waxpeerService.SellItemsAsync(steamId, itemsToSell);
 			if (itemsListed.Count == 0)
@@ -68,23 +70,8 @@ namespace Wallet.WebApi.Controllers
         {
             var activePayment = await _walletService.GetActivePayment(soldItemsDto.SteamId) 
                                 ?? throw new KeyNotFoundException($"Не найден активный платеж для пользователя Steam '{soldItemsDto.SteamId}'");
-
-            var paymentMessage = new TransactionTrigger
-			{
-				Amount = soldItemsDto.Items
-					.Where(item => item.Status.Equals(5))
-					.Sum(item => item.Price),
-
-				Type = TransactionTriggerType.Payment,
-				UserId = activePayment.UserId,
-				TriggerId = activePayment.Id
-			};
             
-			await _messagesBus.Publish(paymentMessage);
-
-            activePayment.Status = PaymentStatus.Completed;
-            await _walletService.UpdatePayment(activePayment);
-
+            await _walletService.CompletePayment(activePayment, soldItemsDto);
 			return Ok(soldItemsDto);
 		}
 	}

@@ -1,4 +1,5 @@
-﻿using Casino.SharedLibrary.Models;
+﻿using Casino.SharedLibrary.Attributes;
+using Casino.SharedLibrary.Models;
 using Microsoft.AspNetCore.Mvc;
 using Wallet.Application.Services.Promocodes;
 using Wallet.Domain.Enums;
@@ -23,14 +24,11 @@ namespace Wallet.WebApi.Controllers
         }
 
         [HttpPost("activate")]
-        public async Task<IActionResult> Activate(Guid userId, string code)
+        public async Task<IActionResult> Activate(
+            [NotEmpty(ErrorMessage = "Id пользователя не может быть пустым")] Guid userId, 
+            [NotEmpty(ErrorMessage = "Промокод не может быть пустым")] string code)
         {
             var response = new ApiResponse<bool>();
-
-            if (userId == Guid.Empty)
-                return BadRequest(response.Error("Id пользователя не может быть пустым"));
-            if (string.IsNullOrEmpty(code))
-                return BadRequest(response.Error("Промокод не может быть пустым"));
 
             var isActivated = await _promocodesService.ActivateAsync(userId, code);
             if (isActivated)

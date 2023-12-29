@@ -1,4 +1,5 @@
 ﻿using Wallet.Domain.Models.Wallet;
+using Wallet.Infrastructure.Models.Waxpeer;
 
 namespace Wallet.Application.Services.Wallet
 {
@@ -6,6 +7,6 @@ namespace Wallet.Application.Services.Wallet
     {
         Task<WaxpeerPayment> CreateWaxpeerPayment(Guid userId, long steamId, List<InventoryAsset> inventoryAssets);
         Task<WaxpeerPayment?> GetActivePayment(long steamId);
-        Task<bool> UpdatePayment(WaxpeerPayment payment);
+        Task<bool> CompletePayment(WaxpeerPayment payment, SoldItemsWebhookDto soldItemsDto);
     }
 }
