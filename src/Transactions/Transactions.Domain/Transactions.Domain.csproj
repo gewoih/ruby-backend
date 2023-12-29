@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Casino.SharedLibrary\Casino.SharedLibrary.csproj" />
+    <ProjectReference Include="..\..\Ruby.SharedLibrary\Ruby.SharedLibrary.csproj" />
   </ItemGroup>
 
 </Project>

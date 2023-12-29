@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Passport", "Passport", "{BD
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Wallet", "Wallet", "{06BFD3B8-A6C5-4F42-B087-3AEE7685D409}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Casino.SharedLibrary", "Casino.SharedLibrary\Casino.SharedLibrary.csproj", "{B33486D8-8FF5-421E-A350-3D7CB0E005EB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ruby.SharedLibrary", "Ruby.SharedLibrary\Ruby.SharedLibrary.csproj", "{B33486D8-8FF5-421E-A350-3D7CB0E005EB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Transactions", "Transactions", "{639948F3-E54D-4303-BFEF-98A810B6FF2E}"
 EndProject

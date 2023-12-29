@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Casino.SharedLibrary\Casino.SharedLibrary.csproj" />
+    <ProjectReference Include="..\..\Ruby.SharedLibrary\Ruby.SharedLibrary.csproj" />
     <ProjectReference Include="..\Transactions.Infrastructure\Transactions.Infrastructure.csproj" />
   </ItemGroup>
 
