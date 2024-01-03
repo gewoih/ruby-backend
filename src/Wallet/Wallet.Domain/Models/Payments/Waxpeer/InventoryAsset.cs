@@ -1,6 +1,6 @@
 ﻿using Casino.SharedLibrary.Enums;
 
-namespace Wallet.Domain.Models.Wallet
+namespace Wallet.Domain.Models.Payments.Waxpeer
 {
     public class InventoryAsset
     {

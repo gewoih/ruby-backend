@@ -4,9 +4,9 @@ using Casino.SharedLibrary.Enums;
 using Casino.SharedLibrary.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Wallet.Application.Services.Wallet;
+using Wallet.Application.Services.Payments.Waxpeer;
 using Wallet.Application.Utils;
-using Wallet.Domain.Models.Wallet;
+using Wallet.Domain.Models.Payments.Waxpeer;
 using Wallet.Infrastructure.Models.Waxpeer;
 using Wallet.Infrastructure.Services.Waxpeer;
 
@@ -15,10 +15,10 @@ namespace Wallet.WebApi.Controllers
     [Route("api/inventory")]
 	public class InventoryController : Controller
     {
-		private readonly IWaxpeerService _waxpeerService;
-        private readonly IWalletService _walletService;
+		private readonly IWaxpeerApiService _waxpeerService;
+        private readonly IWaxpeerPaymentService _walletService;
 
-		public InventoryController(IWaxpeerService waxpeerService, IWalletService walletService)
+		public InventoryController(IWaxpeerApiService waxpeerService, IWaxpeerPaymentService walletService)
 		{
             _waxpeerService = waxpeerService;
             _walletService = walletService;

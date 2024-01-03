@@ -3,18 +3,18 @@ using Casino.SharedLibrary.Services.MessageBus;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Wallet.Domain.Enums;
-using Wallet.Domain.Models.Wallet;
+using Wallet.Domain.Models.Payments.Waxpeer;
 using Wallet.Infrastructure.Database;
 using Wallet.Infrastructure.Models.Waxpeer;
 
-namespace Wallet.Application.Services.Wallet
+namespace Wallet.Application.Services.Payments.Waxpeer
 {
-	public sealed class WalletService : IWalletService
+    public sealed class WaxpeerPaymentService : IWaxpeerPaymentService
     {
         private readonly WalletDbContext _context;
         private readonly IMessageBusService _messageBusService;
 
-        public WalletService(WalletDbContext context, IMessageBusService messageBusService)
+        public WaxpeerPaymentService(WalletDbContext context, IMessageBusService messageBusService)
         {
             _context = context;
             _messageBusService = messageBusService;
@@ -32,7 +32,7 @@ namespace Wallet.Application.Services.Wallet
                 Status = PaymentStatus.Created
             };
 
-			await _context.WaxpeerPayments.AddAsync(waxpeerPayment);
+            await _context.WaxpeerPayments.AddAsync(waxpeerPayment);
             await _context.SaveChangesAsync();
 
             return waxpeerPayment;
@@ -41,7 +41,7 @@ namespace Wallet.Application.Services.Wallet
         public async Task<WaxpeerPayment?> GetActivePayment(long steamId)
         {
             //TODO: пока считаем, что у пользователя может быть только 1 незавершенный платеж
-            return await _context.WaxpeerPayments.FirstOrDefaultAsync(payment => 
+            return await _context.WaxpeerPayments.FirstOrDefaultAsync(payment =>
                 payment.SteamId.Equals(steamId) &&
                 payment.Status.Equals(PaymentStatus.Created));
         }
@@ -51,9 +51,9 @@ namespace Wallet.Application.Services.Wallet
             payment.Status = PaymentStatus.Completed;
             _context.WaxpeerPayments.Update(payment);
             var updatedRows = await _context.SaveChangesAsync();
-            
+
             await CreateAndPublishDepositMessage(payment, soldItemsDto);
-            
+
             return updatedRows > 0;
         }
 
@@ -69,7 +69,7 @@ namespace Wallet.Application.Services.Wallet
                 UserId = payment.UserId,
                 TriggerId = payment.Id
             };
-            
+
             await _messageBusService.Publish(paymentMessage);
         }
     }

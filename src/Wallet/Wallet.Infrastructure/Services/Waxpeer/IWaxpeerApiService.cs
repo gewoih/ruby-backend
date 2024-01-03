@@ -3,7 +3,7 @@ using Wallet.Infrastructure.Models.Waxpeer;
 
 namespace Wallet.Infrastructure.Services.Waxpeer
 {
-	public interface IWaxpeerService
+	public interface IWaxpeerApiService
     {
         Task<UserInfo?> GetUserInfoAsync(long steamId);
         Task<UserInfo?> AddUserAsync(long steamId, string tradeLink);

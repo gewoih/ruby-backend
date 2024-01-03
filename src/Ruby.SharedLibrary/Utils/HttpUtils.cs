@@ -17,10 +17,10 @@
         public static async Task<string> PostAsync(HttpClient httpClient, string requestUrl, HttpContent content)
         {
             var response = await httpClient.PostAsync(requestUrl, content);
-
-            response.EnsureSuccessStatusCode();
-
             var stringContent = await response.Content.ReadAsStringAsync();
+            
+            response.EnsureSuccessStatusCode();
+            
             return stringContent;
         }
     }
