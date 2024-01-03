@@ -13,13 +13,13 @@ namespace Wallet.Infrastructure.Models.NowPayments
 		[JsonProperty("pay_currency")]
 		public string PayCurrency { get; set; }
 
-		[JsonProperty("ipn_callback_url")]
+		[JsonProperty("ipn_callback_url", NullValueHandling = NullValueHandling.Ignore)]
 		public string CallbackUrl { get; set; }
 
 		[JsonProperty("order_id")]
 		public string OrderId { get; set; }
 
-		[JsonProperty("order_description")]
+		[JsonProperty("order_description", NullValueHandling = NullValueHandling.Ignore)]
 		public string Description { get; set; }
 	}
 }

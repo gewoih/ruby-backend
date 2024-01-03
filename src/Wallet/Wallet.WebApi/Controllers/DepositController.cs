@@ -1,6 +1,7 @@
 ﻿using Casino.SharedLibrary.Attributes;
 using Casino.SharedLibrary.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 using Wallet.Application.Models;
 using Wallet.Application.Services.Payments.Now;
 using Wallet.Domain.Models.Payments.NowPayments;
@@ -30,9 +31,12 @@ namespace Wallet.WebApi.Controllers
         [HttpPost("payment")]
         public async Task<IActionResult> Payment(
             [NotEmpty] Guid userId, 
-            [FromBody] CreatePaymentRequestDto createPaymentRequest)
+            [Required, FromBody] CreatePaymentRequestDto createPaymentRequest)
         {
-            var payment = await _nowPaymentsService.CreatePaymentAsync(userId, createPaymentRequest);
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
+
+			var payment = await _nowPaymentsService.CreatePaymentAsync(userId, createPaymentRequest);
             var response = new ApiResponse<NowPayment>().Success(payment);
 
             return Ok(response);

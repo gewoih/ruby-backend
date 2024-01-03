@@ -1,6 +1,7 @@
 using Casino.SharedLibrary.Services.MessageBus;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using Wallet.Application.Services.Payments.Now;
 using Wallet.Application.Services.Payments.Waxpeer;
 using Wallet.Application.Services.Promocodes;
 using Wallet.Infrastructure.Database;
@@ -24,6 +25,7 @@ builder.Services.AddDbContext<WalletDbContext>(options =>
 });
 
 builder.Services.AddScoped<IMessageBusService, MessageBusService>();
+builder.Services.AddScoped<INowPaymentService, NowPaymentService>();
 builder.Services.AddScoped<IWaxpeerPaymentService, WaxpeerPaymentService>();
 builder.Services.AddScoped<INowPaymentsApiService, NowPaymentsApiService>();
 builder.Services.AddScoped<IWaxpeerApiService, WaxpeerService>();

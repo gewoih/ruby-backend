@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Text;
 using Wallet.Infrastructure.Models.NowPayments;
 
 namespace Wallet.Infrastructure.Services.NowPayments
@@ -42,9 +43,10 @@ namespace Wallet.Infrastructure.Services.NowPayments
             var httpClient = CreateHttpClient();
 
             var requestBody = JsonConvert.SerializeObject(createPaymentDto);
-            var content = new StringContent(requestBody);
+            var content = new StringContent(requestBody, Encoding.UTF8, HttpUtils.JsonMediaType);
+			content.Headers.ContentLength = Encoding.UTF8.GetByteCount(requestBody);
 
-            var resultString = await HttpUtils.PostAsync(httpClient, _createPaymentUrl, content);
+			var resultString = await HttpUtils.PostAsync(httpClient, _createPaymentUrl, content);
             var paymentInfo = JsonConvert.DeserializeObject<PaymentInfoDto>(resultString);
 
             return paymentInfo;
@@ -64,7 +66,7 @@ namespace Wallet.Infrastructure.Services.NowPayments
 
         private HttpClient CreateHttpClient()
         {
-			var httpClient = _httpClientFactory.CreateClient();
+            var httpClient = _httpClientFactory.CreateClient();
 			httpClient.DefaultRequestHeaders.Add("x-api-key", _apiKey);
 
             return httpClient;

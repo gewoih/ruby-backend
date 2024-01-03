@@ -69,6 +69,8 @@ namespace Wallet.Application.Services.Payments.Now
 		{
 			internalPayment.PayAddress = externalPayment.PayAddress;
 			internalPayment.PayAmount = externalPayment.PayAmount;
+			internalPayment.Status = Domain.Enums.PaymentStatus.Proceeding;
+
 			await _context.SaveChangesAsync();
 		}
 	}
