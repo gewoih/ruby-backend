@@ -8,7 +8,7 @@ using Wallet.Infrastructure.Models.Waxpeer;
 
 namespace Wallet.Infrastructure.Services.Waxpeer
 {
-	public sealed class WaxpeerService : IWaxpeerService
+	public sealed class WaxpeerService : IWaxpeerApiService
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly string _getUserInfoUrl;

@@ -1,9 +1,9 @@
-﻿using Wallet.Domain.Models.Wallet;
+﻿using Wallet.Domain.Models.Payments.Waxpeer;
 using Wallet.Infrastructure.Models.Waxpeer;
 
-namespace Wallet.Application.Services.Wallet
+namespace Wallet.Application.Services.Payments.Waxpeer
 {
-    public interface IWalletService
+    public interface IWaxpeerPaymentService
     {
         Task<WaxpeerPayment> CreateWaxpeerPayment(Guid userId, long steamId, List<InventoryAsset> inventoryAssets);
         Task<WaxpeerPayment?> GetActivePayment(long steamId);

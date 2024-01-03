@@ -2,6 +2,6 @@
 {
 	public sealed class GetFullCurrenciesDto
 	{
-		public List<CurrencyInfo> Currencies { get; set; }
+		public List<CurrencyInfoDto> Currencies { get; set; }
 	}
 }

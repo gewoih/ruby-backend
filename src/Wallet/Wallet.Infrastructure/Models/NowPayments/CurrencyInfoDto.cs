@@ -2,7 +2,7 @@
 
 namespace Wallet.Infrastructure.Models.NowPayments
 {
-	public sealed class CurrencyInfo
+	public sealed class CurrencyInfoDto
 	{
         public long Id { get; set; }
         public string Code { get; set; }

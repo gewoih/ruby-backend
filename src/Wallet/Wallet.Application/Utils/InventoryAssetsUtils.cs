@@ -1,5 +1,5 @@
 ﻿using Casino.SharedLibrary.Enums;
-using Wallet.Domain.Models.Wallet;
+using Wallet.Domain.Models.Payments.Waxpeer;
 using Wallet.Infrastructure.Models.Waxpeer;
 
 namespace Wallet.Application.Utils
